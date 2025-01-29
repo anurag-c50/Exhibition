@@ -6,7 +6,7 @@ export default function LoginAndRegister() {
   const navigate=useNavigate()
   const fetchLoginData = useSelector((state)=>state?.signupAndLoginReducer?.loginData)
   const dispatch = useDispatch()
-  const [isLoginAndSinup,setIsLoginAndSinup]=useState("Signup")
+  const [isLoginAndSinup,setIsLoginAndSinup]=useState("Login")
   const hanldeLoginSignup=()=>{
     isLoginAndSinup==="Login"?setIsLoginAndSinup("Signup"):setIsLoginAndSinup("Login")
   }
@@ -32,7 +32,7 @@ const submitLogin=()=>{
   dispatch(loginSubmit(loginData))
 }
 useEffect(()=>{
-  if(fetchLoginData.status){
+  if(fetchLoginData?.status){
    navigate("/admindashbord")   
   }
 },[fetchLoginData])

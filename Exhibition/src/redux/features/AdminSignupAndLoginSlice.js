@@ -35,7 +35,7 @@ export const loginSubmit = createAsyncThunk("loginSubmit",async(LoginData)=>{
 export const signupAndLoginInfo = createSlice({
     name:"UserData",
     initialState:{
-        loginData:null,
+        loginData:JSON.parse(localStorage.getItem("UserData")),
         signupData:null
     },
     extraReducers:(builder)=>{
