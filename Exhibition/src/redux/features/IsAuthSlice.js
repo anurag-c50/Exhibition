@@ -3,16 +3,15 @@ import axios from 'axios'
 import { Auth } from "../../apiRouter";
 export const IsAuth=createAsyncThunk("IsAuth",async()=>{
     try{
-        console.log(2)
      const data = await axios.get(Auth,{
         headers:{
             "Authorization":`Bearer ${JSON.parse(localStorage.getItem("Auth"))}`
         }
      })
+     console.log(data)
      if(!data.data.status){
         localStorage.removeItem("Auth");
         localStorage.removeItem("UserData");
-
      }
     }catch(err){
         console.log(err)

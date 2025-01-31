@@ -2,29 +2,27 @@ import React, { useEffect, useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
 import { useSelector,useDispatch } from 'react-redux';
 import CreateExhibitionaPage from '../AdminDashboardcomponent/CreateExhibitionPage';
-import StaffSelection from '../AdminDashboardcomponent/StaffSelection';
+import { IsAuth } from '../redux/features/IsAuthSlice'
 import CreateConference from '../AdminDashboardcomponent/CreateConference';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FetchAdminExhibition } from '../redux/features/ExhibitionSlice';
-
+import { FetchExhibitionConference } from '../redux/features/ConferenceSlice';
+import ExhibitionInfo from '../AdminDashboardcomponent/ExhibitionInfo';
 
 export default function AdminDashbord() {
-  const dispatch=useDispatch()
-  useEffect(()=>{
-    dispatch(FetchAdminExhibition())
-  },[])
   const [addExhibition,setAddExhibition]=useState(false)
   const [showAllinfoExhibition,setShowAllinfoExhibition]=useState(false)
-  const [createConference,setCreateConference]=useState(false)
   const [selectExhibitionIndex,setSelectExhibitionIndex]=useState()
   const AllAdminExhibition=useSelector((state)=>state?.exhibitionReducer?.adminExhibition)
-  const isShowInfoChange=(index)=>{
+
+  const dispatch=useDispatch()
+  useEffect(()=>{
+    dispatch(IsAuth())
+    dispatch(FetchAdminExhibition())
+  },[])
+    const isShowInfoChange=(index)=>{
     setSelectExhibitionIndex(index)
     setShowAllinfoExhibition(!showAllinfoExhibition)
-  }
-  const isOpenCrateConferenceModel=(index)=>{
-    setSelectExhibitionIndex(index)
-    setCreateConference(!createConference)
   }
   return (
     <>
@@ -58,7 +56,6 @@ export default function AdminDashbord() {
             <h1 className='text-white absolute w-[100%] text-center font-extrabold'>{exhibition.exhibitionName}</h1>
              <div className='absolute bottom-0 w-[100%] h-[63%] flex justify-center gap-[20px] items-center'>
               <button onClick={()=>{isShowInfoChange(index)}} className='h-[36%] w-[10%] rounded hover:bg-blue-500  bg-blue-600 text-2xl text-[antiquewhite] text-[20px]'>All Info</button>
-              <button onClick={()=>{isOpenCrateConferenceModel(index)}} className='h-[36%] w-[13%] rounded hover:bg-blue-500  bg-blue-600 text-2xl text-[antiquewhite] text-[20px]'>Create Conference</button>
              </div>
           </div>
           )})} 
@@ -69,16 +66,7 @@ export default function AdminDashbord() {
       <CreateExhibitionaPage setAddExhibition={setAddExhibition}/>
       </Modal> 
       <Modal show={showAllinfoExhibition} fullscreen={true}>
-      <div className="bg-gray-100 flex justify-center flex-col items-center p-6 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%] mx-auto">
-        <div className='h-[20vh] border-[5px] border-blue-600 rounded-[10px]  w-[30%]'>
-          <img className='w-[100%] h-[100%]' src={AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]?.exhibitionBannerImg} alt="" srcset="" />
-        </div>
-        <div className='h-[70vh] w-[100%]'>
-        </div>
-      </div>     
-      </Modal> 
-      <Modal show={createConference} fullscreen={true}>
-      <CreateConference ExhibitionData={AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]}/>
+      <ExhibitionInfo selectExhibitionIndex={selectExhibitionIndex} showAllinfoExhibition={showAllinfoExhibition} setShowAllinfoExhibition={setShowAllinfoExhibition} AllAdminExhibition={AllAdminExhibition}/>
       </Modal> 
     </>
   )

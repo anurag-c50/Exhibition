@@ -20,7 +20,6 @@ export const CreateExhibition=createAsyncThunk("CreateExhibition",async(exhibiti
         exhibitionAddress:exhibitionData.exhibitionAddress,
         exhibitionBannerImg:exhibitionData.exhibitionBannerImg,
         exhibitionDuration:exhibitionData.exhibitionDuration,
-        maxNoOfConferencePlayAtTime:exhibitionData.maxNoOfConferencePlayAtTime,
         noOfExhibitionStaffManagementRequire:exhibitionData.noOfExhibitionStaffManagementRequire
     })
     return data.data

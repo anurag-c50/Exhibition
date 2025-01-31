@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { IsAuth } from '../redux/features/IsAuthSlice'
 import { CreateExhibition } from '../redux/features/ExhibitionSlice'
 export default function CreateExhibitionaPage({setAddExhibition}) {
   const dispatch=useDispatch()
   const ExhibitionDataRes = useSelector((state)=>state?.exhibitionReducer?.exhibitionData)
-  useEffect(()=>{
-    dispatch(IsAuth())
-  },[])
+
   const adminData=useSelector((state)=>state?.signupAndLoginReducer?.loginData)
   const [exhibitionData,setExhibitionData]=useState({
     adminId:adminData._id,
@@ -23,7 +20,6 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
       Start:"",
       End:""
     },
-    maxNoOfConferencePlayAtTime:null,
     noOfExhibitionStaffManagementRequire:null
   })
   const handleCreateExhibition=(e)=>{
@@ -87,11 +83,6 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
             <input type="date" name="End" className="border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} id="EndDate"/>
           </div>
         </div>
-
-        <div className="flex justify-center">
-          <input type="number" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="maxNoOfConferencePlayAtTime" value={exhibitionData.maxNoOfConferencePlayAtTime} placeholder="Enter number of concurrent conferences" />
-        </div>
-
         <div className="flex justify-center">
           <input type="number" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="noOfExhibitionStaffManagementRequire" value={exhibitionData.noOfExhibitionStaffManagementRequire} placeholder="Enter number of staff required" />
         </div>
@@ -101,7 +92,7 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
         </div>
 
         <div className="flex justify-center">
-          <button onClick={Exhibitioncreate} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition">Create Exhibition </button>
+          <button onClick={()=>Exhibitioncreate()} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition">Create Exhibition </button>
         </div>
       </div>
     </div>    
