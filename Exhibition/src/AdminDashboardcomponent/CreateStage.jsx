@@ -1,24 +1,59 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { CreateStageData } from '../redux/features/ConferenceSlice';
 
-export default function CreateStage() {
+export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo}) {
+  const dispatch = useDispatch();
+  const speakersData = useSelector((state) => state?.conferenceReducer?.fetchSpeakerData?.data);
+  const [performanceDesciption,setPerformanceDesciption]=useState("")
+  const [stageData,setStatgeData]=useState({
+    exhibitionId:ExhibitionInfo?._id,
+    conferenceId:ConferenceInfoAtIndex?._id,
+    performerSpeaker:speakersData,
+    performerDescription:performanceDesciption
+  })
+  console.log(ConferenceInfoAtIndex,ExhibitionInfo)
+  const handleSelectSpreaker=(index)=>{
+    setStatgeData({...stageData,performerSpeaker:(speakersData[index])._id})
+  }
+  const handlechangeperformanceDesciption=(e)=>{
+    setStatgeData({...stageData,performerDescription:e.target.value})
+  }
+  const CreateStage=()=>{
+    dispatch(CreateStageData(stageData))
+  }
   return (
-    <>
-    <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full">
-      <h2 className="text-[16px] text-center font-semibold text-blue-600 mb-6">Create New Stage</h2>
-      
-      <div className="space-y-6">
-        <div className="flex justify-center">
-          <input type="text" className="w-[80%] md:w-[100%] text-center border-[2px] border-gray-300 rounded-lg p-2" name="exhibitionName" placeholder="Enter Exhibition Name" />
-        </div>
-        <div className="flex justify-center">
-          <input type="number" className="w-[100%] text-center border-[2px] border-gray-300 rounded-lg p-2"  placeholder="Enter number of staff required" />
-        </div>
+    <div className="w-full flex justify-center py-6 flex-col items-center bg-gray-50 rounded-lg shadow-xl">
+      <div className="w-full max-w-4xl space-y-6">
+        <div className="w-full flex flex-col items-center flex-wrap justify-center gap-6">
+        <label htmlFor="isOffer" className="font-medium text-lg">Select Speaker For Performance:</label>
 
+          {speakersData && speakersData.map((item,index) => {
+            return (
+              <div key={index} onClick={()=>{handleSelectSpreaker(index)}} className="hover:cursor-pointer border-[2px] w-[100%] md:w-[45%] lg:w-[30%] border-gray-300 rounded-lg bg-white shadow-md p-4 space-y-2">
+                <div>
+                  <p className="text-sm m-0 text-gray-500 font-medium">Speaker Name:</p>
+                  <p className="text-lg m-0 text-gray-800 font-semibold">{item.userName}</p>
+                </div>
+                <div>
+                  <p className="text-sm m-0 text-gray-500 font-medium">Speaker Email:</p>
+                  <p className="text-lg text-gray-800">{item.userEmail}</p>
+                </div>
+                <div>
+                  <p className="text-sm m-0 text-gray-500 font-medium">Speaker Contact No.:</p>
+                  <p className="text-lg m-0 text-gray-800">{item.userContactNo}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
         <div className="flex justify-center">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-[7px] hover:bg-blue-500 transition">Create Stage </button>
+          <input onChange={(e)=>{handlechangeperformanceDesciption(e)}} type="text" value={stageData.performerDescription} className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 text-gray-700" name="exhibitionName" placeholder="Describe Performance"/>
+        </div>
+        <div className="flex justify-center">
+          <input onClick={()=>{CreateStage()}} type="button" value="Create Stage" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition duration-300 transform hover:scale-105"/>
         </div>
       </div>
-    </div>    
-    </>
-  )
+    </div>
+  );
 }

@@ -3,27 +3,41 @@ import Modal from 'react-bootstrap/Modal';
 import { useSelector,useDispatch } from 'react-redux';
 import CreateExhibitionaPage from '../AdminDashboardcomponent/CreateExhibitionPage';
 import { IsAuth } from '../redux/features/IsAuthSlice'
-import CreateConference from '../AdminDashboardcomponent/CreateConference';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FetchAdminExhibition } from '../redux/features/ExhibitionSlice';
-import { FetchExhibitionConference } from '../redux/features/ConferenceSlice';
 import ExhibitionInfo from '../AdminDashboardcomponent/ExhibitionInfo';
-
+import { useNavigate } from 'react-router-dom';
+import { UserLogout } from '../redux/features/LogoutSlice';
+import { setLoginData } from '../redux/features/AdminSignupAndLoginSlice';
+import { setLogoutStatus } from '../redux/features/LogoutSlice';
 export default function AdminDashbord() {
   const [addExhibition,setAddExhibition]=useState(false)
   const [showAllinfoExhibition,setShowAllinfoExhibition]=useState(false)
   const [selectExhibitionIndex,setSelectExhibitionIndex]=useState()
+  const UserData=JSON.parse(localStorage.getItem("UserData"))
   const AllAdminExhibition=useSelector((state)=>state?.exhibitionReducer?.adminExhibition)
-
+  const logoutStatus=useSelector((state)=>state?.logoutReducer?.logoutStatus)
   const dispatch=useDispatch()
+  const navigate=useNavigate()
   useEffect(()=>{
+    console.log('Auth')
     dispatch(IsAuth())
     dispatch(FetchAdminExhibition())
   },[])
+  const Logout=()=>{
+    dispatch(UserLogout(UserData?.userEmail))
+  }
     const isShowInfoChange=(index)=>{
     setSelectExhibitionIndex(index)
     setShowAllinfoExhibition(!showAllinfoExhibition)
   }
+  useEffect(()=>{
+    if(logoutStatus?.status){
+        dispatch(setLoginData(null))
+        dispatch(setLogoutStatus(null))
+        navigate('/') 
+    }
+  },[logoutStatus])
   return (
     <>
     <div className="min-h-screen bg-gray-100">
@@ -34,7 +48,7 @@ export default function AdminDashbord() {
             <button  className="hover:bg-blue-500 px-4 py-2 rounded">
               Update Profile
             </button>
-            <button  className="hover:bg-red-500 px-4 py-2 rounded">
+            <button onClick={()=>{Logout()}} className="hover:bg-red-500 px-4 py-2 rounded">
               Logout
             </button>
           </div>
@@ -65,7 +79,7 @@ export default function AdminDashbord() {
     <Modal show={addExhibition} fullscreen={true}>
       <CreateExhibitionaPage setAddExhibition={setAddExhibition}/>
       </Modal> 
-      <Modal show={showAllinfoExhibition} fullscreen={true}>
+      <Modal show={showAllinfoExhibition} size='lg'>
       <ExhibitionInfo selectExhibitionIndex={selectExhibitionIndex} showAllinfoExhibition={showAllinfoExhibition} setShowAllinfoExhibition={setShowAllinfoExhibition} AllAdminExhibition={AllAdminExhibition}/>
       </Modal> 
     </>

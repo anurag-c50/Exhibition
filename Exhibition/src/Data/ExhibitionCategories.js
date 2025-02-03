@@ -1,0 +1,28 @@
+export const exhibitionCategories = [
+    { name: 'Art' },
+    { name: 'Technology' },
+    { name: 'Science' },
+    { name: 'History' },
+    { name: 'Culture' },
+    { name: 'Fashion' },
+    { name: 'Photography' },
+    { name: 'Design' },
+    { name: 'Education' },
+    { name: 'Environment' },
+    { name: 'Sports' },
+    { name: 'Health & Wellness' },
+    { name: 'Music' },
+    { name: 'Food & Beverage' },
+    { name: 'Architecture' },
+    { name: 'Literature' },
+    { name: 'Film' },
+    { name: 'Crafts' },
+    { name: 'Virtual Reality' },
+    { name: 'Innovation' },
+    { name: 'Automotive' },
+    { name: 'Lifestyle' },
+    { name: 'MakeUp' },
+    { name: 'Game' },
+    { name: 'Travel & Tourism' }
+  ];
+    

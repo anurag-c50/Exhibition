@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
 import { CreateExhibition } from '../redux/features/ExhibitionSlice'
+import { exhibitionCategories } from '../Data/ExhibitionCategories';
+
 export default function CreateExhibitionaPage({setAddExhibition}) {
   const dispatch=useDispatch()
   const ExhibitionDataRes = useSelector((state)=>state?.exhibitionReducer?.exhibitionData)
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
   const adminData=useSelector((state)=>state?.signupAndLoginReducer?.loginData)
   const [exhibitionData,setExhibitionData]=useState({
     adminId:adminData._id,
@@ -15,6 +18,7 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
       city:"",
       pincode:null
     },
+    exhibitionCategorie:selectedItem,
     exhibitionBannerImg:"",
     exhibitionDuration:{
       Start:"",
@@ -43,12 +47,23 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
   const Exhibitioncreate=()=>{
     dispatch(CreateExhibition(exhibitionData))
   }
+    const filteredData = exhibitionCategories.filter((item) =>
+      item?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   useEffect(()=>{
     if(ExhibitionDataRes?.status){
       setAddExhibition(false)
     }
   },[ExhibitionDataRes])
+  const handleChange = (e) => {
+    setSearchQuery(e.target.value);
+    setSelectedItem(null);
+  };
 
+  const handleSelect = (item) => {
+    setSelectedItem(item);
+    setSearchQuery("");
+  };
   return (
     <>
    <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%] mx-auto">
@@ -63,15 +78,34 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
           <div className="flex justify-center mb-4">
             <input type="text" className="w-[80%] md:w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="address" value={exhibitionData.exhibitionAddress.address} placeholder="Enter Address" />
           </div>
-
+      <div className="w-full flex justify-center mb-4">
+      <div className="relative w-[60%] bg-white rounded-full border  border-gray-300 shadow-lg" >
+        <input  type="text"  placeholder={selectedItem ? '' : 'Search Exhibition Categories'}  value={selectedItem ? selectedItem.name : searchQuery}   onChange={handleChange} className="w-full px-4 py-2 rounded-full text-lg text-gray-700 focus:outline-none"/>
+        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"  onClick={() => {setSearchQuery(''); setSelectedItem(null)  }}>
+        ✖
+        </button>
+      </div>
+      {searchQuery && (
+        <div className="mt-[2.7rem] max-h-48 absolute w-[22%] overflow-y-auto bg-white shadow-lg rounded-lg border">
+          <ul className="space-y-2">
+            {filteredData.map((item, index) => (
+              <li key={index} className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleSelect(item)}  >
+                {item.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {filteredData.length === 0 && searchQuery && !selectedItem && (
+        <p className="mt-2 text-gray-500">No results found</p>
+      )}
+    </div>
           <div className="flex justify-center space-x-4">
             <input type="text" className="w-[40%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="state" value={exhibitionData.exhibitionAddress.state} placeholder="Enter State"/>
             <input type="text" className="w-[40%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="city" value={exhibitionData.exhibitionAddress.city} placeholder="Enter City" />
-            <input type="number" className="w-[20%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="pincode" value={exhibitionData.exhibitionAddress.pincode} placeholder="Enter Pincode"
-            />
+            <input type="number" className="w-[20%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="pincode" value={exhibitionData.exhibitionAddress.pincode} placeholder="Enter Pincode"/>
           </div>
         </div>
-
         <div className="flex justify-center gap-8">
           <div>
             <label htmlFor="StartDate" className="block text-center">Start Date:</label>

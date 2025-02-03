@@ -29,13 +29,14 @@ export default function CreateConference({ExhibitionData,setCreateConference,cre
         setConferenceDate({...conferenceData,conferenceDate:date})
     }
     const IsDateValidConference=()=>{
-      let Dates=[]
-      console.log(ExhibhitionEndTime)
-        while(ExhibhitionStartTime<=ExhibhitionEndTime){
-          Dates.push(new Date(ExhibhitionStartTime).toISOString().split("T")[0])
-          ExhibhitionStartTime.setDate(ExhibhitionStartTime.getDate()+1)
-        }
-        setAllowdDate(Dates.map((date)=>parseISO(date)))
+      let Dates = [];
+      while (ExhibhitionStartTime <= ExhibhitionEndTime) {
+          Dates.push(new Date(ExhibhitionStartTime).toISOString().split("T")[0]);
+          ExhibhitionStartTime.setDate(ExhibhitionStartTime.getDate() + 1);
+      }
+        const currentDate = new Date().toISOString().split("T")[0];
+        const filteredDates = Dates.filter(date => date > currentDate);
+        setAllowdDate(filteredDates.map(date => parseISO(date)));
         }    
     const isAlloweDate=(date)=>{return alloweDate.some(Date=>isSameDay(date,Date))}
     const handleConferenceDate=(e)=>{

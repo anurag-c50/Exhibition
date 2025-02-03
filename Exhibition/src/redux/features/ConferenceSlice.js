@@ -1,5 +1,5 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import { createConference } from "../../apiRouter";
+import { createConference, createStageData, FetchSpeakerData } from "../../apiRouter";
 import { fetchExhibitionConference } from "../../apiRouter";
 import axios from "axios";
 
@@ -17,6 +17,30 @@ export const FetchConferenceInfoForDate=createAsyncThunk("FetchConferenceInfoFor
     try{
         const data = await axios.post(fetchExhibitionConference,{
             exhibitionId:exhibitionId,
+            })
+        return data.data
+        }catch(err){
+            console.log(err)
+        }
+})
+export const FetchAllSpeakerStaff=createAsyncThunk("FetchAllSpeakerStaff",async()=>{
+    try{
+        const data = await axios.post(FetchSpeakerData,{
+            staffRole:"5",
+            })
+        return data.data
+        }catch(err){
+            console.log(err)
+        }
+})
+export const CreateStageData=createAsyncThunk("CreateStageData",async(StageData)=>{
+    try{
+        console.log(StageData.performerSpeaker)
+        const data = await axios.post(createStageData,{
+            exhibitionId:StageData.exhibitionId,
+            conferenceId:StageData.conferenceId,
+            performerSpeaker:StageData.performerSpeaker,
+            performerDescription:StageData.performerDescription
             })
         return data.data
         }catch(err){
@@ -45,8 +69,9 @@ export const conferenceInfo=createSlice({
     initialState:{
         createdconferenceData:null,
         exhibitionAllCOnferenceInfo:null,
-        conferenceInfoForDate:null
-
+        conferenceInfoForDate:null,
+        fetchSpeakerData:null,
+        stageData:null
     },
     extraReducers:(builder)=>{
         builder.addCase(AdminCreatedConference.fulfilled,(state,action)=>{
@@ -57,6 +82,12 @@ export const conferenceInfo=createSlice({
         })
         builder.addCase(FetchConferenceInfoForDate.fulfilled,(state,action)=>{
             state.conferenceInfoForDate=action.payload
+        })
+        builder.addCase(FetchAllSpeakerStaff.fulfilled,(state,action)=>{
+            state.fetchSpeakerData=action.payload
+        })
+        builder.addCase(CreateStageData.fulfilled,(state,action)=>{
+            state.stageData=action.payload
         })
     }
 })

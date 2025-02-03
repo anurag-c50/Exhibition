@@ -3,10 +3,12 @@ import axios from 'axios'
 import { loginRoute, signupRoute } from "../../apiRouter";
 export const signupSubmit=createAsyncThunk("signupSubmit",async(SigupData)=>{
     try{
-        const data  = await axios.post(signupRoute,{
+        await axios.post(signupRoute,{
             userType:SigupData.userType,
             userName:SigupData.userName,
             userEmail:SigupData.userEmail,
+            brandName:SigupData.brandName,
+            staffRole:SigupData.staffRole,
             userContactNo:SigupData.userContactNo,
             password:SigupData.password,
         })
@@ -20,12 +22,15 @@ export const loginSubmit = createAsyncThunk("loginSubmit",async(LoginData)=>{
             userEmail:LoginData.userEmail,
             password:LoginData.password,
         })
-        console.log(data)
         if(data.status !==200){
             throw new Error("Data not savSed")
         }
-        localStorage.setItem("UserData",JSON.stringify(data.data.userdata))
-        localStorage.setItem("Auth",JSON.stringify(data.data.token))
+        console.log("login")
+        if(data.data.status){
+            localStorage.setItem("UserData",JSON.stringify(data.data.userdata))
+            localStorage.setItem("Auth",JSON.stringify(data.data.token))
+         }
+
         return data.data
     }catch(err){
         console.log({error: err})
@@ -44,10 +49,15 @@ export const signupAndLoginInfo = createSlice({
         
         })
         builder.addCase(loginSubmit.fulfilled,(state,action)=>{
-            console.log(action.payload)
             state.loginData=action.payload
         })
     },
+      reducers: {
+        setLoginData: (state, action) => {
+          state.loginData = action.payload;
+        },
+      },
 })
+export const { setLoginData } = signupAndLoginInfo.actions;
 
 export default signupAndLoginInfo.reducer
