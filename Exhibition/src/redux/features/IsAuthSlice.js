@@ -8,11 +8,16 @@ export const IsAuth=createAsyncThunk("IsAuth",async()=>{
             "Authorization":`Bearer ${JSON.parse(localStorage.getItem("Auth"))}`
         }
      })
+     
      console.log(data)
+     if(data.status !==200){
+        throw new Error("Server Error")
+    }
      if(!data.data.status){
         localStorage.removeItem("Auth");
         localStorage.removeItem("UserData");
      }
+     
     }catch(err){
         console.log(err)
     }

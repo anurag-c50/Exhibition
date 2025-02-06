@@ -7,132 +7,97 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { setLogoutStatus, UserLogout } from '../redux/features/LogoutSlice';
 import { useNavigate } from 'react-router-dom';
 import { exhibitionCategories } from '../Data/ExhibitionCategories';
+import { createBookTicket, FetchALlTicket } from '../redux/features/AttendeeSlice';
+import { FetchExhibitionForBrand } from '../redux/features/BrandSlice';
 import { setLoginData } from '../redux/features/AdminSignupAndLoginSlice';
-import { AddProductInBrand, brandRegisterInExhibition, fetchAllBrandExhibitionInfo, FetchExhibitionForBrand,setBrandRegister, setbrandAddDataProduct } from '../redux/features/BrandSlice';
-import { setfetchExhibitionForBrand } from '../redux/features/BrandSlice';
-import ProductInfo from '../BrandDashboard/ProductInfo';
-export default function BrandDashborad() {
+import { setBookTicketInfo,setfetchAllTicketData } from '../redux/features/AttendeeSlice';
+import {setfetchExhibitionForBrand} from '../redux/features/BrandSlice'
+export default function AttendeDashbord() {
   const navigate = useNavigate()
   const UserData = JSON.parse(localStorage.getItem("UserData"))
   const logoutStatus = useSelector((state) => state?.logoutReducer?.logoutStatus)
+  const [qrCode,setQRCode]=useState()
+  const [showQrCodeModel,setShowQrCodeModel]=useState(false)
   const dispatch = useDispatch()
-  const [productData,setProductData]=useState()
+  const [userTicekt,setUserTicket]=useState(true)
   const [searchQuery, setSearchQuery] = useState('');
-  const [brandData,setBradnData]=useState({
-    productName:"",
-    confernceId:"",
-    offerInfo:{
-      isOffer:false,
-      offerPercentage:null
-    },
-    productDescription:"",
-    productStockQuantity:"",
-    productPrice:""
-  })
   const [selectedItem, setSelectedItem] = useState(null);
-  const [openAddProductModal,setOpenAddProductModal]=useState(false)
-  const [openProductInfoModal,setOpenProductInfoModal]=useState(false)
+    const [selectExhibitionConferenceData,setSelectExhibitionConferenceData]=useState()
   const [showParticularExhibition,setShowParticularExhibition]=useState(true)
+  const fetchAllTicket=useSelector((state)=>state?.AttendeReducer?.fetchAllTicketData)
   const exhibitionDataForCategorie=useSelector((state)=>state?.BrandReducer?.fetchExhibitionForBrand)
-  const brandExhibitionData=useSelector((state)=>state?.BrandReducer?.allBrandExhibition)
-  const BrandRegisterInExhibition=useSelector((state)=>state?.BrandReducer?.brandRegisterInExhibition)
-  const addProductData=useSelector((state)=>state?.BrandReducer?.brandAddDataProduct)
+  const userBookTicket = useSelector((state)=>state?.AttendeReducer?.BookTicketInfo)
+  const [openBookTicket,setopenBookTicket]=useState(false)
   const currentDate=new Date()
-  const [selectExhibitionConferenceData,setSelectExhibitionConferenceData]=useState()
-  const [openBrandRegisterInExhibition,setOpenBrandRegisterInExhibition]=useState(false)
-  const handleOpenModalbrandRegister=()=>{
-    setOpenBrandRegisterInExhibition(true)
+  const handleOpenModalBookeTicket=()=>{
+    setopenBookTicket(true)
   }
-  const setOffer=()=>{
-    setBradnData({...brandData,offerInfo:{ ...brandData.offerInfo,isOffer: !(brandData?.offerInfo?.isOffer)}});
-  }
-  const handleChangeBrandData=(e)=>{
-    if(e.target.name==='offerPercentage'){
-      setBradnData({...brandData,offerInfo:{ ...brandData.offerInfo,offerPercentage: e.target.value }});
-    }
-    else{
-    setBradnData({...brandData,[e.target.name]:e.target.value})
-    }
-  }
-  const addProduct=()=>{
-    dispatch(AddProductInBrand(brandData))
-  }
-  const handleOpenModalAddProduct=(confernceId)=>{
-    setBradnData({...brandData,confernceId:confernceId})
-    setOpenAddProductModal(true)
-  }
-  const handleCosedModalAddProduct=()=>{
-    setOpenAddProductModal(false)
-  }
-  const handleOpenModalProductInfo=(product)=>{
-    setProductData(product)
-    setOpenProductInfoModal(true)
-  }
-  const handleCosedModalProductInfo=()=>{
-      setOpenProductInfoModal(false)
-  }
-  useEffect(() => {
-    dispatch(IsAuth())
-    dispatch(fetchAllBrandExhibitionInfo())
-    if(addProductData){
-      setBradnData({productName:"",offerInfo:{isOffer:false,offerPercentage:null},productDescription:"",productStockQuantity:"",productPrice:""})
-      setOpenAddProductModal(false)
-      setbrandAddDataProduct(null)
-    }
-    if(BrandRegisterInExhibition?.status){
-      setOpenBrandRegisterInExhibition(false)
-      setBrandRegister(null)
+  console.log(fetchAllTicket)
+useEffect(() => {
+  if (logoutStatus?.status) {
+    dispatch(setLoginData(null))
+    dispatch(setLogoutStatus(null))
+   navigate('/')
+ }
+
+    dispatch(IsAuth())  
+    const userData = JSON.parse(localStorage.getItem("UserData"));
+    if (userData && userData?.userTicket?.length !== 0) {
+      dispatch(FetchALlTicket())
+      setUserTicket(true)
+      setopenBookTicket(false)
       setSelectedItem("")
       dispatch(setfetchExhibitionForBrand(null))
-      setShowParticularExhibition(true)
-      setSelectExhibitionConferenceData()
-    }
-  }, [logoutStatus,addProductData,BrandRegisterInExhibition]);
+      }else{
+        setUserTicket(false)
+      }
+  }, [logoutStatus,userBookTicket]);
   const filteredData = exhibitionCategories.filter((item) =>
     item?.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  useEffect(() => {
-    if (logoutStatus?.status) {
-      dispatch(setLoginData(null))
-      dispatch(setLogoutStatus(null))
-      navigate('/')
-    }
-  }, [logoutStatus])
+  )
 
+  // console.log(fetchAllTicket&&exhibitionCategories&&result())
   const Logout = () => {
     dispatch(UserLogout(UserData?.userEmail))
   }
-  const fetchAllExhibitonForBrand=()=>{
-    dispatch(FetchExhibitionForBrand(selectedItem))
+  const fetchAllExhibitonForAttende=()=>{
+        dispatch(FetchExhibitionForBrand(selectedItem))
   }
   const handleChange = (e) => {
     setSearchQuery(e.target.value);
     setSelectedItem(null);
-  };
-  const handleclosedModalbrandRegister=()=>{
-    dispatch(setfetchExhibitionForBrand(null))
+  }
+  const handleclosedModalBookeTicket=()=>{
     setSelectedItem("")
+    dispatch(setfetchExhibitionForBrand(null))
     setShowParticularExhibition(true)
-    setOpenBrandRegisterInExhibition(false)
+    setopenBookTicket(false)
   }
     const handleSelect = (item) => {
     setSelectedItem(item);
     setSearchQuery("");
   }
-  const registerInConference=(data)=>{
-    // console.log(data)
-    dispatch(brandRegisterInExhibition(data._id))
-  }
   const handleChangeParticularExhibition=(index)=>{
     setSelectExhibitionConferenceData(exhibitionDataForCategorie?.data[index])
-    setShowParticularExhibition(false)
+    setShowParticularExhibition(false)  
+  }
+  const BookTicket=(data)=>{
+    dispatch(createBookTicket(data._id))
+  }
+  const ShowQRCode=(data)=>{
+    console.log()
+    setQRCode(data.filter((item)=>item.userId===(JSON.parse(localStorage.getItem("UserData"))._id)))
+    setShowQrCodeModel(true)
+  }
+  const setCloseQrCodeModel=()=>{
+    setShowQrCodeModel(false)
   }
   return (
     <>
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-blue-600 p-4 text-white">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl">{UserData?.brandName} Dashboard</h1>
+          <h1 className="text-2xl">Attendee Dashboard</h1>
           <div className="space-x-4">
             <button  className="hover:bg-blue-500 px-4 py-2 rounded">
               Update Profile
@@ -143,19 +108,23 @@ export default function BrandDashborad() {
           </div>
         </div>
       </nav>
+
       <div className="container mx-auto p-6">
   <div className="flex justify-between items-center mb-6">
-    <h2 className="text-3xl font-semibold text-gray-800">Brand Participation</h2>
-    <button onClick={()=>{handleOpenModalbrandRegister()}} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500">
-           Register Your Brand
+    <h2 className="text-3xl font-semibold text-gray-800">Attendee Participation</h2>
+    <button onClick={()=>{handleOpenModalBookeTicket()}} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500">
+           Serach Exhibition
           </button>
   </div> 
-{console.log()}
+
   <div className="border-[5px] border-blue-600 rounded-lg overflow-hidden shadow-lg ">
-    { brandExhibitionData?.groupedExhibitions.length!==0?
-    brandExhibitionData && brandExhibitionData?.groupedExhibitions.map((item, index1) => {
+    {!userTicekt?(<div className='flex justify-center text-gray-500'>
+      <h1>User Have No Ticket</h1>
+    </div>):
+     (
+      fetchAllTicket && fetchAllTicket?.data.map((item, index1) => {
       return (
-        <div key={index1} className="relative m-[7px] bg-white rounded-lg shadow-md hover:shadow-lg  h-auto">
+        <div key={index1} className="relative m-[7px] bg-white rounded-lg shadow-md hover:shadow-lg h-auto">
           <div className="relative h-[13vh]">
             <img className="w-full h-[100%] object-cover rounded-t-lg opacity-70" src={item?.exhibition?.exhibitionBannerImg} alt="Exhibition" />
             <div className="absolute top-4 left-4 right-4 text-center text-white font-extrabold text-xl bg-black bg-opacity-60 px-4 py-2 rounded-md">
@@ -178,40 +147,8 @@ export default function BrandDashborad() {
               <p className='m-0'>{item?.exhibition?.exhibitionAddress?.address}, {item?.exhibition?.exhibitionAddress?.city}, {item?.exhibition?.exhibitionAddress?.state}, {item?.exhibition?.exhibitionAddress?.pincode}</p>
             </div>
           </div>
-          {item?.conferencesWithProducts[0]?.products ? item?.conferencesWithProducts.map((conference, index2) => {
-              return (
-                <div key={index2} className="">
-                  <div className="text-sm mt-[4px] flex justify-around text-gray-700">
-                    <div className="flex">
-                      <p className="m-0 font-semibold">Conference Room No.</p>
-                      <p  className="m-0">{conference?.conference?.conferenceNo}</p>
-                    </div>
-                    <div className="flex ">
-                      <p className="m-0 font-semibold">Conference Date:</p>
-                      <p  className="m-0">{new Date(conference?.conference?.conferenceDuration?.conferenceStartTiming).toLocaleDateString()}</p>
-                    </div>
-                    <div className="flex">
-                      <p className="m-0 font-semibold">Start Time:</p>
-                      <p className='m-0'>{new Date(conference?.conference?.conferenceDuration?.conferenceStartTiming).toLocaleTimeString()}</p>
-                    </div>
-                    <div className="flex">
-                      <p className="m-0 font-semibold">End Time:</p>
-                      <p  className="m-0">{new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming).toLocaleTimeString()}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-[10px] justify-center">
-                  {currentDate < new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming) ? (<>
-                  <input type="button" onClick={() => handleOpenModalAddProduct(conference?.conference?._id)} 
-                  className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Product"/>
-                  {conference?.products?.length > 0 && (
-                    <input type="button" onClick={() => handleOpenModalProductInfo(conference?.products)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Product Info"/>)}</>):(
-                      <div className='w-[100%] text-center text-gray-400 text-[20px]'>Ticket Expired</div>
-                    )}
-
-              </div>
-                </div>
-              )
-            }):item?.conferencesWithProducts.map((conference, index2) => {
+        
+          {item?.conferences.map((conference, index2) => {
               return (
                 <div key={index2} className="">
                   <div className="text-sm mt-[4px] flex justify-around text-gray-700">
@@ -232,26 +169,22 @@ export default function BrandDashborad() {
                       <p  className="m-0">{new Date(conference?.conferenceDuration?.conferenceEndTiming).toLocaleTimeString()}</p>
                     </div>
                   </div>
-                  <div className="flex gap-[10px] justify-center">
-                  {currentDate < new Date(conference?.conferenceDuration?.conferenceEndTiming) ?
-              <input type='button' onClick={()=>handleOpenModalAddProduct(conference?._id)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Product"/>
-                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Ticket Expired</div>
-                    }
-
+                  <div className="flex gap-[10px] pb-1 justify-center">
+              {currentDate<new Date(conference?.conferenceDuration?.conferenceStartTiming)?<input type='button' onClick={()=>ShowQRCode(conference?.userTicket)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Show Ticket"/>
+              :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Ticket Expired</div>}
             </div>
-            </div>)})}
-            
+                </div>
+              )
+            })}
         </div>
-      )
-    }):<div className='w-[100%]'><h1 className='text-center text-gray-400 text-[20px]'>You have not registered for any exhibitions yet.</h1></div>}
-  </div>
-</div>
-
-    </div>
-    <Modal onHide={()=>handleclosedModalbrandRegister()} size='lg' show={openBrandRegisterInExhibition}>
+    )}))} 
+              </div>
+              </div>
+              </div>
+    <Modal onHide={()=>handleclosedModalBookeTicket()} size='lg' show={openBookTicket}>
     <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
-            Register Your Brand
+            Book Exhibition Ticket
           </Modal.Title>
           </Modal.Header>
       <Modal.Body>
@@ -261,9 +194,9 @@ export default function BrandDashborad() {
         ?<div className="w-full max-w-md mx-auto mt-2">
         <p className='text-[17px] text-gray-500'>{exhibitionDataForCategorie?.msg}</p>
         </div>:
-      <div className=' p-[1`%] overflow-y-auto rounded-lg overflow-hidden bg-white shadow-lg'>
+      <div className=' p-[1%] overflow-y-auto rounded-lg overflow-hidden bg-white shadow-lg'>
         {exhibitionDataForCategorie?.data.map((item, index)=>{return(
-          <div className='flex border-[2px] m-[5px] border-gray-400 rounded-lg justify-center items-center flex-col'>
+          <div className='flex m-[7px] border-[2px]  border-gray-400 rounded-lg justify-center items-center flex-col'>
             <h3 className='m-0'>{item?.exhibition?.exhibitionName}</h3>
             <div className="flex w-[100%] justify-around text-sm text-gray-700">
               <div className='t'>
@@ -287,7 +220,7 @@ export default function BrandDashborad() {
       </div>):
     
       <div className="space-y-6">
-      {selectExhibitionConferenceData&&
+        {selectExhibitionConferenceData&&
         <div className="border-gray-400 rounded-lg overflow-hidden bg-white shadow-lg">
           <div className="relative">
             <img className="w-full h-64 object-cover brightness-50" src={selectExhibitionConferenceData?.exhibition?.exhibitionBannerImg} alt={selectExhibitionConferenceData?.exhibition.exhibitionName} />
@@ -332,16 +265,15 @@ export default function BrandDashborad() {
                         <p>{new Date(conference?.conferenceDuration?.conferenceEndTiming).toLocaleTimeString()}</p>
                       </div>
                   </div>
-                  <div className='w-[100%] flex justify-center h-[6vh] items-center'>
-                    {currentDate<new Date(conference?.conferenceDuration?.conferenceStartTiming)?
-                    <input type='button' onClick={()=>{registerInConference(conference)}} className=' w-[20%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] ' value="Register In Exhibition"/> 
-                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Registration Time Expired</div>}
+                  <div className=' w-[100%] flex justify-center h-[6vh] items-center'>
+                    {currentDate<new Date(conference?.conferenceDuration?.conferenceStartTiming)?<input type='button' onClick={()=>{BookTicket(conference)}} className=' w-[20%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] ' value="Book Ticket"/> 
+                     :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Confernece Time Expired</div>}
                     </div>
                   </div>
                 )})}
               </div>
           </div>
-        </div>}
+        </div>} 
     </div>
       :
       <div className="w-full max-w-md mx-auto mt-2">
@@ -366,63 +298,24 @@ export default function BrandDashborad() {
         <p className="mt-2 text-gray-500">No results found</p>
       )}
       {selectedItem&&<div className=' w-[100%] flex justify-center mt-[13px] items-center'>
-        <button onClick={()=>{fetchAllExhibitonForBrand()}} className='h-[36%] w-[59%] rounded hover:bg-blue-500  bg-blue-600 text-2xl text-[antiquewhite] text-[20px]'>Search Latest Exhibition</button>  
-        </div>}
+       <button onClick={()=>{fetchAllExhibitonForAttende()}} className='h-[36%] w-[59%] rounded hover:bg-blue-500  bg-blue-600 text-2xl text-[antiquewhite] text-[20px]'>Search Latest Exhibition</button>  
+      </div>}
     </div>
     }
       </Modal.Body>
-    </Modal> 
-    <Modal onHide={()=>{handleCosedModalAddProduct()}} size='lg'  show={openAddProductModal}>
+    </Modal>
+    <Modal onHide={()=>{setCloseQrCodeModel()}} size='lg'  show={showQrCodeModel}>
     <Modal.Header closeButton>
-
           <Modal.Title id="example-custom-modal-styling-title">
-            Add Your Product
+            QR Code
           </Modal.Title>
           </Modal.Header>
       <Modal.Body>
-        <div className='flex justify-center'>
-      <div className=' flex py-1 w-[80%] flex-col gap-[15px] h-auto border-2 border-gray-300 rounded-lg shadow-lg'>
-  <div className="flex justify-center">
-    <input  type="text" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e)=>handleChangeBrandData(e)} value={brandData?.productName} name="productName"  placeholder="Enter Product Name" />
-  </div>
-
-  <div className="flex justify-center">
-    <input type='text' className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e)=>handleChangeBrandData(e)} value={brandData?.productDescription} name='productDescription' placeholder="Enter Product Description" />
-  </div>
-
-  <div className="flex justify-center">
-    <input type="number" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e)=>handleChangeBrandData(e)} value={brandData?.productStockQuantity} name="productStockQuantity" placeholder="Enter Product Stock" />
-  </div>
-  <div className="flex justify-center">
-    <input type="number" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"  name="productPrice" onChange={(e)=>handleChangeBrandData(e)} value={brandData?.productPrice} placeholder="Enter Product Price" />
-  </div>
-  <div className="flex justify-center items-center">
-    <label htmlFor="isOffer" className="font-medium text-lg">Product On Offer:</label>
-    <input type="checkbox" className="p-2 hover:cursor-pointer h-[3vh] w-[2vw]" onClick={()=>setOffer()} name="isOffer" id='isOffer' />
-  </div>
-  {brandData?.offerInfo?.isOffer && (
-    <div className='flex justify-center'>
-      <input type="number" name="offerPercentage" onChange={(e)=>handleChangeBrandData(e)} value={brandData?.offerInfo?.offerPercentage} placeholder='Enter Offer Percentage' className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-    </div>
-  )}
-  <div className="flex justify-center">
-    <input type="submit" onClick={()=>addProduct()} className="bg-blue-600 text-white text-center px-5 py-2 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300" placeholder='Add Product'/>
-  </div>
-</div>
-</div>
-
+      <div className='overflow-y-auto flex justify-center rounded-lg overflow-hidden bg-white shadow-lg'>
+          {qrCode&&<img src={qrCode[0]?.ticket} alt="" srcset="" />}
+        </div>
       </Modal.Body>
       </Modal> 
-      <Modal onHide={()=>{handleCosedModalProductInfo()}} size='lg'  show={openProductInfoModal}>
-    <Modal.Header closeButton>
-          <Modal.Title id="example-custom-modal-styling-title">
-            Product Info
-          </Modal.Title>
-          </Modal.Header>
-      <Modal.Body>
-        <ProductInfo ProductData={productData}/>
-      </Modal.Body>
-      </Modal> 
-    </>
+           </>
   )
 }

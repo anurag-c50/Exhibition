@@ -12,5 +12,8 @@ export const fetchAllBrandExhibition = `${host}/api/fetchallbrandexhibition`
 export const BrandAddProduct=`${host}/api/brandaddproduct`
 export const FetchSpeakerData=`${host}/api/fetchspeakerdata`
 export const createStageData=`${host}/api/createstagedata`
+export const bookTicket=`${host}/api/bookticket`
+export const fetchAllUserTicket=`${host}/api/fetchalluserticket`
+
 
 export const logOut=`${host}/api/logout`

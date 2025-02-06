@@ -3,7 +3,7 @@ import axios from 'axios'
 import { loginRoute, signupRoute } from "../../apiRouter";
 export const signupSubmit=createAsyncThunk("signupSubmit",async(SigupData)=>{
     try{
-        await axios.post(signupRoute,{
+        const data=await axios.post(signupRoute,{
             userType:SigupData.userType,
             userName:SigupData.userName,
             userEmail:SigupData.userEmail,
@@ -12,6 +12,8 @@ export const signupSubmit=createAsyncThunk("signupSubmit",async(SigupData)=>{
             userContactNo:SigupData.userContactNo,
             password:SigupData.password,
         })
+        return data.data
+
     }catch(err){
         console.log(err)
     }
@@ -54,10 +56,13 @@ export const signupAndLoginInfo = createSlice({
     },
       reducers: {
         setLoginData: (state, action) => {
-          state.loginData = action.payload;
+          state.loginData = action.payload
         },
+        setUserSignupData:(state,action)=>{
+            state.signupData=action.payload
+        }
       },
 })
-export const { setLoginData } = signupAndLoginInfo.actions;
+export const { setLoginData,setUserSignupData } = signupAndLoginInfo.actions;
 
 export default signupAndLoginInfo.reducer

@@ -9,11 +9,11 @@ export default function ConferenceInfo({setOpenConferenceByDate,ConferenceInfoAt
     const [conferenceIndex,setCOnferenceIndex]=useState()    
     const [openCreateStage,setOpenCreateStage]=useState(false)
     const closedModal=()=>{
-        setOpenConferenceByDate(!openConferenceByDate)
+        setOpenConferenceByDate(false)
       }
       const handleOpenCreateStage=(index)=>{
         setCOnferenceIndex(index)
-        dispatch(FetchAllSpeakerStaff())
+        dispatch(FetchAllSpeakerStaff(ConferenceInfoAtDate[index]._id))
         setOpenCreateStage(true)
       }
       const handleCloseCreateStage=()=>{
@@ -31,7 +31,7 @@ export default function ConferenceInfo({setOpenConferenceByDate,ConferenceInfoAt
       <div key={index} className="w-[98%] mx-auto my-3 border-2 border-gray-300 rounded-lg p-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="flex justify-center items-center space-x-2">
-            <p className="font-semibold text-gray-600">Stage No.</p>
+            <p className="font-semibold text-gray-600">Conference No.</p>
             <p className="text-gray-800">{item?.conferenceNo}</p>
           </div>
           <div className="flex justify-center items-center space-x-2">
@@ -60,7 +60,7 @@ export default function ConferenceInfo({setOpenConferenceByDate,ConferenceInfoAt
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="flex justify-center items-center space-x-2">
             <p className="font-semibold text-gray-600">Available Stages:</p>
-            <p className="text-gray-800">{item?.noOfStageInConference}</p>
+            <p className="text-gray-800">{item?.noOfStageInConference-item?.stageId.length}</p>
           </div>
           <div className="flex justify-center items-center space-x-2">
             <p className="font-semibold text-gray-600">Number of Brands Registered:</p>
@@ -68,9 +68,8 @@ export default function ConferenceInfo({setOpenConferenceByDate,ConferenceInfoAt
           </div>
         </div>
         <div className="flex justify-center">
-          <button onClick={()=>handleOpenCreateStage(index)} className="h-12 w-[40%] bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-500 transition-all">
-            Create Stage
-          </button>
+          {item?.noOfStageInConference!==item?.stageId.length?<input type='button' value="Create Stage" onClick={()=>handleOpenCreateStage(index)} className="h-12 w-[40%] bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-500 transition-all"/>
+          :<></>}
         </div>
       </div>
     ))}
@@ -82,7 +81,7 @@ export default function ConferenceInfo({setOpenConferenceByDate,ConferenceInfoAt
     <Modal.Title id="example-custom-modal-styling-title">Create New Stage</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <CreateStage ExhibitionInfo={ExhibitionInfo} ConferenceInfoAtIndex={ConferenceInfoAtDate[conferenceIndex]}/>
+      <CreateStage ExhibitionInfo={ExhibitionInfo} setOpenCreateStage={setOpenCreateStage} setOpenConferenceByDate={setOpenConferenceByDate} ConferenceInfoAtIndex={ConferenceInfoAtDate[conferenceIndex]}/>
       </Modal.Body>
       </Modal> 
     </>

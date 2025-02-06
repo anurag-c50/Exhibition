@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { CreateStageData } from '../redux/features/ConferenceSlice';
-
-export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo}) {
+import { setuserStatgeData } from '../redux/features/ConferenceSlice';
+export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo,setOpenCreateStage,setOpenConferenceByDate}) {
   const dispatch = useDispatch();
+  const [speakerChoiceIndex,setSpeakerChoiceIndex]=useState()
   const speakersData = useSelector((state) => state?.conferenceReducer?.fetchSpeakerData?.data);
-  const [performanceDesciption,setPerformanceDesciption]=useState("")
   const [stageData,setStatgeData]=useState({
     exhibitionId:ExhibitionInfo?._id,
     conferenceId:ConferenceInfoAtIndex?._id,
     performerSpeaker:speakersData,
-    performerDescription:performanceDesciption
+    performerDescription:""
   })
-  console.log(ConferenceInfoAtIndex,ExhibitionInfo)
+const createStatgedata=useSelector((state)=>state?.conferenceReducer?.stageData)
+useEffect(()=>{
+  if(createStatgedata?.status){
+    setuserStatgeData(null)
+    setOpenConferenceByDate(false)
+    setOpenCreateStage(false)
+  }
+},[createStatgedata])
   const handleSelectSpreaker=(index)=>{
+    setSpeakerChoiceIndex(index)
     setStatgeData({...stageData,performerSpeaker:(speakersData[index])._id})
   }
   const handlechangeperformanceDesciption=(e)=>{
@@ -30,7 +38,7 @@ export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo}) {
 
           {speakersData && speakersData.map((item,index) => {
             return (
-              <div key={index} onClick={()=>{handleSelectSpreaker(index)}} className="hover:cursor-pointer border-[2px] w-[100%] md:w-[45%] lg:w-[30%] border-gray-300 rounded-lg bg-white shadow-md p-4 space-y-2">
+              <div key={index} onClick={()=>{handleSelectSpreaker(index)}} className={`hover:cursor-pointer ${index===speakerChoiceIndex?"bg-gray-300":"bg-white"} border-[2px] w-[100%] md:w-[45%] lg:w-[30%] border-gray-300 rounded-lg  shadow-md p-4 space-y-2`}>
                 <div>
                   <p className="text-sm m-0 text-gray-500 font-medium">Speaker Name:</p>
                   <p className="text-lg m-0 text-gray-800 font-semibold">{item.userName}</p>
@@ -48,7 +56,7 @@ export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo}) {
           })}
         </div>
         <div className="flex justify-center">
-          <input onChange={(e)=>{handlechangeperformanceDesciption(e)}} type="text" value={stageData.performerDescription} className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 text-gray-700" name="exhibitionName" placeholder="Describe Performance"/>
+          <input onChange={(e)=>{handlechangeperformanceDesciption(e)}} type="text" value={stageData?.performerDescription} className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-3 text-gray-700" name="exhibitionName" placeholder="Describe Performance"/>
         </div>
         <div className="flex justify-center">
           <input onClick={()=>{CreateStage()}} type="button" value="Create Stage" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition duration-300 transform hover:scale-105"/>

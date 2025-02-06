@@ -7,10 +7,9 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
   const dispatch=useDispatch()
   const ExhibitionDataRes = useSelector((state)=>state?.exhibitionReducer?.exhibitionData)
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null);
   const adminData=useSelector((state)=>state?.signupAndLoginReducer?.loginData)
   const [exhibitionData,setExhibitionData]=useState({
-    adminId:adminData._id,
+    adminId:JSON.parse(localStorage.getItem('UserData'))._id,
     exhibitionName:"",
     exhibitionAddress:{
       address:"",
@@ -18,7 +17,7 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
       city:"",
       pincode:null
     },
-    exhibitionCategorie:selectedItem,
+    exhibitionCategorie:"",
     exhibitionBannerImg:"",
     exhibitionDuration:{
       Start:"",
@@ -57,16 +56,19 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
   },[ExhibitionDataRes])
   const handleChange = (e) => {
     setSearchQuery(e.target.value);
-    setSelectedItem(null);
   };
 
   const handleSelect = (item) => {
-    setSelectedItem(item);
+    setExhibitionData({...exhibitionData,exhibitionCategorie:item?.name})
     setSearchQuery("");
-  };
+  }
+  const clearSearchBar=()=>{
+    setSearchQuery('')
+    setExhibitionData({...exhibitionData,exhibitionCategorie:""})
+  }
   return (
     <>
-   <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%] mx-auto">
+   <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-[100vh]  mx-auto">
       <h2 className="text-3xl text-center font-semibold text-blue-600 mb-6">Create New Exhibition</h2>
       
       <div className="space-y-6">
@@ -78,26 +80,26 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
           <div className="flex justify-center mb-4">
             <input type="text" className="w-[80%] md:w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="address" value={exhibitionData.exhibitionAddress.address} placeholder="Enter Address" />
           </div>
-      <div className="w-full flex justify-center mb-4">
+      <div className="w-full flex flex-col items-center justify-center mb-4">
       <div className="relative w-[60%] bg-white rounded-full border  border-gray-300 shadow-lg" >
-        <input  type="text"  placeholder={selectedItem ? '' : 'Search Exhibition Categories'}  value={selectedItem ? selectedItem.name : searchQuery}   onChange={handleChange} className="w-full px-4 py-2 rounded-full text-lg text-gray-700 focus:outline-none"/>
-        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"  onClick={() => {setSearchQuery(''); setSelectedItem(null)  }}>
+        <input  type="text"  placeholder={exhibitionData?.exhibitionCategorie ? '' : 'Search Exhibition Categories'}  value={exhibitionData?.exhibitionCategorie!=="" ? exhibitionData?.exhibitionCategorie : searchQuery}   onChange={handleChange} className="w-full px-4 py-2 rounded-full text-lg text-gray-700 focus:outline-none"/>
+        <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"  onClick={() => {clearSearchBar()}}>
         ✖
         </button>
       </div>
       {searchQuery && (
-        <div className="mt-[2.7rem] max-h-48 absolute w-[22%] overflow-y-auto bg-white shadow-lg rounded-lg border">
+        <div className=" max-h-48 top-[35%] absolute w-[22%] overflow-y-auto bg-white shadow-lg rounded-lg border">
           <ul className="space-y-2">
-            {filteredData.map((item, index) => (
+            {filteredData.length === 0?
+            <p className="mt-2 text-gray-500">No results found</p>
+            :
+            filteredData.map((item, index) => (
               <li key={index} className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleSelect(item)}  >
                 {item.name}
               </li>
             ))}
           </ul>
         </div>
-      )}
-      {filteredData.length === 0 && searchQuery && !selectedItem && (
-        <p className="mt-2 text-gray-500">No results found</p>
       )}
     </div>
           <div className="flex justify-center space-x-4">
@@ -126,7 +128,7 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
         </div>
 
         <div className="flex justify-center">
-          <button onClick={()=>Exhibitioncreate()} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition">Create Exhibition </button>
+          <input type="button" onClick={()=>Exhibitioncreate()} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition" value="Create Exhibition"/> 
         </div>
       </div>
     </div>    

@@ -17,16 +17,17 @@ export default function AdminDashbord() {
   const UserData=JSON.parse(localStorage.getItem("UserData"))
   const AllAdminExhibition=useSelector((state)=>state?.exhibitionReducer?.adminExhibition)
   const logoutStatus=useSelector((state)=>state?.logoutReducer?.logoutStatus)
+  const addExhibitionData=useSelector((state)=>state?.exhibitionReducer?.exhibitionData)
   const dispatch=useDispatch()
   const navigate=useNavigate()
   useEffect(()=>{
-    console.log('Auth')
     dispatch(IsAuth())
     dispatch(FetchAdminExhibition())
-  },[])
+  },[addExhibitionData])
   const Logout=()=>{
     dispatch(UserLogout(UserData?.userEmail))
   }
+  
     const isShowInfoChange=(index)=>{
     setSelectExhibitionIndex(index)
     setShowAllinfoExhibition(!showAllinfoExhibition)
@@ -62,10 +63,13 @@ export default function AdminDashbord() {
             Add New Exhibition
           </button>
         </div>
-        <div className='border-[5px] border-blue-600 w-[84.4vw] rounded-[10px] overflow-y-auto h-[69vh]'>
-        {AllAdminExhibition && AllAdminExhibition?.adminExhibitons?.map((exhibition,index) => { 
+        <div className='border-[5px] border-blue-600 w-[84.4vw] rounded-[10px] overflow-y-auto h-auto'>
+          {AllAdminExhibition&&AllAdminExhibition?.adminExhibitons.length===0?(
+            <div className='w-[100%] text-gray-400 text-center' ><h1>The admin hasn't set up any exhibitions yet.</h1></div>
+          ):
+        AllAdminExhibition && AllAdminExhibition?.adminExhibitons?.map((exhibition,index) => { 
           return(
-          <div className=' h-[33%] m-[4px] relative'>
+        <div className=' h-[20vh] m-[4px] relative'>
             <img className='w-[100%]  h-[100%] rounded-[10px] absolute brightness-[0.5]' src={exhibition.exhibitionBannerImg} alt="" />
             <h1 className='text-white absolute w-[100%] text-center font-extrabold'>{exhibition.exhibitionName}</h1>
              <div className='absolute bottom-0 w-[100%] h-[63%] flex justify-center gap-[20px] items-center'>

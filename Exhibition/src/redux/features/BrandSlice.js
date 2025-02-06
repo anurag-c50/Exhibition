@@ -7,6 +7,9 @@ export const FetchExhibitionForBrand=createAsyncThunk("FetchExhibitionForBrand",
     const data = await axios.post(fetchExhibitionbasedCategorie,{
         exhibitionCategorie:exhibitionCategorie,
         })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
     return data.data
     }catch(err){
         console.log(err)
@@ -14,15 +17,18 @@ export const FetchExhibitionForBrand=createAsyncThunk("FetchExhibitionForBrand",
 })
 export const AddProductInBrand=createAsyncThunk("AddProductInBrand",async(productData)=>{
     try{
-        console.log(productData)
     const data = await axios.post(BrandAddProduct,{
         brandId:JSON.parse(localStorage.getItem("UserData"))._id,
+        conferenceId:productData.confernceId,
         productName:productData.productName,
         offerInfo:productData.offerInfo,
         productDescription:productData.productDescription,
         productStockQuantity:productData.productStockQuantity,
         productPrice:productData.productPrice
         })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
     return data.data
     }catch(err){
         console.log(err)
@@ -31,8 +37,12 @@ export const AddProductInBrand=createAsyncThunk("AddProductInBrand",async(produc
 export const fetchAllBrandExhibitionInfo=createAsyncThunk("fetchAllBrandExhibitionInfo",async()=>{
     try{
     const data = await axios.post(fetchAllBrandExhibition,{
-        brandId:JSON.parse(localStorage.getItem("UserData"))?._id
+        brandId:JSON.parse(localStorage.getItem("UserData"))?._id,
+        brandConferenceStallId:JSON.parse(localStorage.getItem("UserData"))?.brandConferenceStallId
         })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
     return data.data
     }catch(err){
         console.log(err)
@@ -44,6 +54,10 @@ export const brandRegisterInExhibition=createAsyncThunk("brandRegisterInExhibiti
         conferenceId:conferenceId,
         brandId:JSON.parse(localStorage.getItem("UserData"))?._id
         })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
+    localStorage.setItem("UserData",JSON.stringify(data.data.data))
     return data.data
     }catch(err){
         console.log(err)
@@ -78,7 +92,10 @@ export const BrandInfo=createSlice({
         setbrandAddDataProduct: (state, action) => {
             state.brandAddDataProduct = action.payload;
           },
+          setBrandRegister: (state, action) => {
+            state.brandRegisterInExhibition = action.payload;
+          },
       },
     })
-export const { setfetchExhibitionForBrand,setbrandAddDataProduct } = BrandInfo.actions;
-export default BrandInfo.reducer
+export const { setfetchExhibitionForBrand,setbrandAddDataProduct,setBrandRegister } = BrandInfo.actions;
+export default BrandInfo.reducer  

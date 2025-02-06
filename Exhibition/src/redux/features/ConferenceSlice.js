@@ -8,6 +8,9 @@ export const FetchExhibitionConference=createAsyncThunk("FetchExhibitionConferen
     const data = await axios.post(fetchExhibitionConference,{
         exhibitionId:exhibitionId,
         })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
     return data.data
     }catch(err){
         console.log(err)
@@ -18,16 +21,23 @@ export const FetchConferenceInfoForDate=createAsyncThunk("FetchConferenceInfoFor
         const data = await axios.post(fetchExhibitionConference,{
             exhibitionId:exhibitionId,
             })
+            if(data.status !==200){
+                throw new Error("Server Error")
+            }
         return data.data
         }catch(err){
             console.log(err)
         }
 })
-export const FetchAllSpeakerStaff=createAsyncThunk("FetchAllSpeakerStaff",async()=>{
+export const FetchAllSpeakerStaff=createAsyncThunk("FetchAllSpeakerStaff",async(conferenceId)=>{
     try{
         const data = await axios.post(FetchSpeakerData,{
             staffRole:"5",
+            conferenceId:conferenceId
             })
+            if(data.status !==200){
+                throw new Error("Server Error")
+            }
         return data.data
         }catch(err){
             console.log(err)
@@ -35,19 +45,21 @@ export const FetchAllSpeakerStaff=createAsyncThunk("FetchAllSpeakerStaff",async(
 })
 export const CreateStageData=createAsyncThunk("CreateStageData",async(StageData)=>{
     try{
-        console.log(StageData.performerSpeaker)
         const data = await axios.post(createStageData,{
             exhibitionId:StageData.exhibitionId,
             conferenceId:StageData.conferenceId,
             performerSpeaker:StageData.performerSpeaker,
             performerDescription:StageData.performerDescription
             })
+            if(data.status !==200){
+                throw new Error("Server Error")
+            }
         return data.data
         }catch(err){
             console.log(err)
         }
 })
-export const AdminCreatedConference=createAsyncThunk("CreateConference",async(conferenceData)=>{
+export const AdminCreatedConference=createAsyncThunk("AdminCreatedConference",async(conferenceData)=>{
     try{
     const data = await axios.post(createConference,{
         exhibitionId:conferenceData.exhibitionId,
@@ -58,7 +70,9 @@ export const AdminCreatedConference=createAsyncThunk("CreateConference",async(co
         noOfStageInConference:conferenceData.noOfStageInConference,
         noOfConferenceStaffManagementRequire:conferenceData.noOfConferenceStaffManagementRequire,
     })
-    console.log(data.data)
+    if(data.status !==200){
+        throw new Error("Server Error")
+    }
     return data.data
     }catch(err){
         console.log(err)
@@ -89,6 +103,15 @@ export const conferenceInfo=createSlice({
         builder.addCase(CreateStageData.fulfilled,(state,action)=>{
             state.stageData=action.payload
         })
+    },
+    reducers:{
+        setConferenceData:(state,action)=>{
+            state.createdconferenceData=action.payload
+        },
+        setuserStatgeData:(state,action)=>{
+            state.stageData=action.payload
+        }
     }
 })
+export const {setConferenceData,setuserStatgeData}=conferenceInfo.actions
 export default conferenceInfo.reducer

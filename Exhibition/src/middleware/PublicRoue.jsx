@@ -29,6 +29,8 @@ export default function PublicRoute({ element, redirectTo }) {
       return <Navigate to="/branddashbord" />
     } else if (role === '4') {
       return <Navigate to="/staffdashbord" />
+    }else if (role === '5') {
+      return <Navigate to="/attendedashbord" />
     } else {
       return <Navigate to={redirectTo} />
     }

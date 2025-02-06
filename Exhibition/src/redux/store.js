@@ -4,6 +4,7 @@ import  exhibitionReducer  from './features/ExhibitionSlice'
 import  isAuthReducer from './features/IsAuthSlice'
 import conferenceReducer from './features/ConferenceSlice'
 import logoutReducer from './features/LogoutSlice'
+import AttendeReducer from './features/AttendeeSlice'
 import BrandReducer from './features/BrandSlice'
 export const store = configureStore({
     reducer:{
@@ -12,6 +13,7 @@ export const store = configureStore({
         exhibitionReducer:exhibitionReducer, 
         conferenceReducer:conferenceReducer,
         BrandReducer:BrandReducer,
-        logoutReducer:logoutReducer
+        logoutReducer:logoutReducer,
+        AttendeReducer:AttendeReducer
     }
 })

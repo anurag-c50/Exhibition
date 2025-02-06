@@ -11,11 +11,14 @@ export default function ExhibitionInfo({AllAdminExhibition,showAllinfoExhibition
       const [ConferenceInfoAtDate,setConferenceInfoAtDate]=useState()
       const [createConference,setCreateConference]=useState(false)
       const [openConferenceByDate,setOpenConferenceByDate]=useState(false)
+      const createconferenceData=useSelector((state)=>state?.conferenceReducer?.createdconferenceData)    
       const [conferenceCountByDate,setconferenceCountByDate]=useState()
+      const currentDate=new Date()
+      const createStatgedata=useSelector((state)=>state?.conferenceReducer?.stageData)
     useEffect(()=>{
         IsDateValidConference()        
         dispatch(FetchExhibitionConference(AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]._id))
-    },[])
+    },[createconferenceData,createStatgedata])
     const ConferenceInfoForExhibition=useSelector((state)=>state?.conferenceReducer?.exhibitionAllCOnferenceInfo?.ExhibitonsConference)
    
     const extractDate = (timestamp) => {
@@ -37,7 +40,6 @@ export default function ExhibitionInfo({AllAdminExhibition,showAllinfoExhibition
               
                   return acc;
               }, {});
-              console.log(conferenceCount)
               setconferenceCountByDate(conferenceCount)
         }
     },[ConferenceInfoForExhibition])
@@ -60,9 +62,12 @@ export default function ExhibitionInfo({AllAdminExhibition,showAllinfoExhibition
           const openModalForConferenceDate=(date)=>{
             let conferenceIdsAtDate=conferenceCountByDate[date]?.ids
             setConferenceInfoAtDate(ConferenceInfoForExhibition.filter(data =>conferenceIdsAtDate.some(id => id === data._id)))
-            console.log()
             setOpenConferenceByDate(true)
           }
+          const convertToDate = (dateString) => {
+            const [day, month, year] = dateString.split('/')
+            return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
+          };
   return (
    <>
    <div className="bg-gray-100 flex flex-col p-6 items-center rounded-lg shadow-lg w-[100%]">
@@ -92,7 +97,7 @@ export default function ExhibitionInfo({AllAdminExhibition,showAllinfoExhibition
       </div>
       <div>
         <label className="block text-lg font-semibold text-gray-700">Exhibition Available Staff Positions</label>
-        <div className="text-center text-gray-600 p-2 border border-gray-300 rounded-lg">{AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]?.exhibitionStaffManagementId.length}</div>
+        <div className="text-center text-gray-600 p-2 border border-gray-300 rounded-lg">{AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]?.noOfExhibitionStaffManagementRequire-AllAdminExhibition?.adminExhibitons[selectExhibitionIndex]?.exhibitionStaffManagementId.length}</div>
       </div>
       <div className="overflow-y-auto h-[40%] space-y-4">
         {alloweDate?.map((item, index) => (
@@ -114,8 +119,9 @@ export default function ExhibitionInfo({AllAdminExhibition,showAllinfoExhibition
         ))}
       </div>
       <div className='w-[100%] flex justify-center'>
-      <input onClick={()=>isOpenCrateConferenceModel()} className="h-12 w-[30%] text-center hover:cursor-pointer rounded-[10px] bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors" value="Create Conference"/>
-      </div>
+      {alloweDate &&convertToDate(alloweDate[alloweDate.length-1])>currentDate ? 
+  <input onClick={() => isOpenCrateConferenceModel()} className="h-12 w-[30%] text-center hover:cursor-pointer rounded-[10px] bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors" value="Create Conference" />:<p className="text-gray-600 font-extrabold text-[20px] text-center">Exhibition Expired</p> }
+</div>
     </div>
   </div>
   <Modal show={createConference} fullscreen={true}>

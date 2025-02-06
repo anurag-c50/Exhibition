@@ -7,6 +7,9 @@ export const FetchAdminExhibition=createAsyncThunk("FetchAdminExhibition",async(
     const data = await axios.post(FetchAllAdminExhibition,{
         adminId:JSON.parse(localStorage.getItem("UserData"))?._id,
     })
+    if(data.status !==200){
+        throw new Error("Server Error")
+    }
     return data.data
     }catch(err){
         console.log(err)
@@ -23,6 +26,9 @@ export const CreateExhibition=createAsyncThunk("CreateExhibition",async(exhibiti
         exhibitionDuration:exhibitionData.exhibitionDuration,
         noOfExhibitionStaffManagementRequire:exhibitionData.noOfExhibitionStaffManagementRequire
     })
+    if(data.status !==200){
+        throw new Error("Server Error")
+    }
     return data.data
     }catch(err){
         console.log(err)

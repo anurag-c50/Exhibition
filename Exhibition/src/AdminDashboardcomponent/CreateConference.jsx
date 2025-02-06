@@ -4,9 +4,11 @@ import {format,isSameDay,parseISO} from 'date-fns'
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector,useDispatch } from 'react-redux';
 import { AdminCreatedConference } from '../redux/features/ConferenceSlice';
+import { setConferenceData } from '../redux/features/ConferenceSlice';
 export default function CreateConference({ExhibitionData,setCreateConference,createConference}) {
   const dispatch=useDispatch()
     const Time=new Date()
+    const createconferenceData=useSelector((state)=>state?.conferenceReducer?.createdconferenceData)
     const [conferenceData,setConferenceDate]=useState({
       exhibitionId:ExhibitionData._id,
       conferenceNo:null,
@@ -23,8 +25,13 @@ export default function CreateConference({ExhibitionData,setCreateConference,cre
     const ExhibhitionStartTime =new Date(ExhibitionData.exhibitionDuration.Start)
     const ExhibhitionEndTime =new Date(ExhibitionData.exhibitionDuration.End)
     useEffect(()=>{
-        IsDateValidConference()
-    },[])
+        if(createconferenceData?.status){
+          setCreateConference(!createConference)
+          setConferenceData(null)
+        }else{
+          IsDateValidConference()
+        }
+    },[createconferenceData])
     const SelectDayConference=(date)=>{
         setConferenceDate({...conferenceData,conferenceDate:date})
     }
@@ -43,13 +50,11 @@ export default function CreateConference({ExhibitionData,setCreateConference,cre
       if(e.target.name==="conferenceStartTiming" || e.target.name==="conferenceEndTiming"){
         setConferenceDate({...conferenceData,conferenceDuration:{...conferenceData.conferenceDuration,[e.target.name]:e.target.value}})
       }else{
-        console.log(e.target.name)
         setConferenceDate({...conferenceData,[e.target.name]:e.target.value})
       }
     }
     const ConferenceCreate=()=>{
       dispatch(AdminCreatedConference(conferenceData))
-
     }
     const closedModal=()=>{
       setCreateConference(!createConference)
@@ -88,7 +93,7 @@ export default function CreateConference({ExhibitionData,setCreateConference,cre
           <input type="number" className="w-[40%] text-center border-[2px] border-gray-300 rounded-lg p-2"  onChange={(e)=>{handleConferenceDate(e)}} value={conferenceData.noOfConferenceStaffManagementRequire} name="noOfConferenceStaffManagementRequire" placeholder="Enter number of staff required" />
         </div>
         <div className="flex justify-center">
-          <button onClick={()=>ConferenceCreate()} className="bg-blue-600 text-white px-6 py-3 rounded-[10px] hover:bg-blue-500 transition">Create Conference</button>
+          <input type='button' onClick={()=>ConferenceCreate()} className="bg-blue-600 text-white px-6 py-3 rounded-[10px] hover:bg-blue-500 transition" value="Create Conference"/>
         </div>   
         </div>
         </div>
