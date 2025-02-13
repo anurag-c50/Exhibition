@@ -7,15 +7,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { FetchAdminExhibition } from '../redux/features/ExhibitionSlice';
 import ExhibitionInfo from '../AdminDashboardcomponent/ExhibitionInfo';
 import { useNavigate } from 'react-router-dom';
-import { UserLogout } from '../redux/features/LogoutSlice';
+import { setAlllogoutStatus, UserAllLogout, UserLogout } from '../redux/features/LogoutSlice';
 import { setLoginData } from '../redux/features/AdminSignupAndLoginSlice';
 import { setLogoutStatus } from '../redux/features/LogoutSlice';
+import { setSelectExhibitionData } from '../redux/features/ExhibitionSlice';
+
 export default function AdminDashbord() {
   const [addExhibition,setAddExhibition]=useState(false)
   const [showAllinfoExhibition,setShowAllinfoExhibition]=useState(false)
   const [selectExhibitionIndex,setSelectExhibitionIndex]=useState()
   const UserData=JSON.parse(localStorage.getItem("UserData"))
   const AllAdminExhibition=useSelector((state)=>state?.exhibitionReducer?.adminExhibition)
+  const selectEhibitionStaffData = useSelector((state) => state?.exhibitionReducer?.selectExhibitionStaffData);
+  const AlllogoutStatus=useSelector((state)=>state?.logoutReducer?.AlllogoutStatus)
   const logoutStatus=useSelector((state)=>state?.logoutReducer?.logoutStatus)
   const addExhibitionData=useSelector((state)=>state?.exhibitionReducer?.exhibitionData)
   const dispatch=useDispatch()
@@ -23,9 +27,15 @@ export default function AdminDashbord() {
   useEffect(()=>{
     dispatch(IsAuth())
     dispatch(FetchAdminExhibition())
-  },[addExhibitionData])
+    if(selectEhibitionStaffData){
+    dispatch(setSelectExhibitionData(null))
+    }
+  },[addExhibitionData,selectEhibitionStaffData])
   const Logout=()=>{
     dispatch(UserLogout(UserData?.userEmail))
+  }
+  const AllLogout=()=>{
+    dispatch(UserAllLogout())
   }
   
     const isShowInfoChange=(index)=>{
@@ -38,7 +48,12 @@ export default function AdminDashbord() {
         dispatch(setLogoutStatus(null))
         navigate('/') 
     }
-  },[logoutStatus])
+    if(AlllogoutStatus?.status){
+      dispatch(setLoginData(null))
+      dispatch(setAlllogoutStatus(null))
+      navigate('/') 
+  }
+  },[logoutStatus,AlllogoutStatus])
   return (
     <>
     <div className="min-h-screen bg-gray-100">
@@ -46,12 +61,8 @@ export default function AdminDashbord() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl">Admin Dashboard</h1>
           <div className="space-x-4">
-            <button  className="hover:bg-blue-500 px-4 py-2 rounded">
-              Update Profile
-            </button>
-            <button onClick={()=>{Logout()}} className="hover:bg-red-500 px-4 py-2 rounded">
-              Logout
-            </button>
+          <input  type="button" onClick={()=>{Logout()}} value="Logout " className="hover:bg-red-500 px-4 py-2 rounded"/> 
+            <input  type="button" onClick={()=>{AllLogout()}} value="Logout From All devices" className="hover:bg-red-500 px-4 py-2 rounded"/> 
           </div>
         </div>
       </nav>
@@ -79,12 +90,20 @@ export default function AdminDashbord() {
           )})} 
         </div> 
       </div>
-    </div>
-    <Modal show={addExhibition} fullscreen={true}>
-      <CreateExhibitionaPage setAddExhibition={setAddExhibition}/>
-      </Modal> 
+    </div> 
       <Modal show={showAllinfoExhibition} size='lg'>
       <ExhibitionInfo selectExhibitionIndex={selectExhibitionIndex} showAllinfoExhibition={showAllinfoExhibition} setShowAllinfoExhibition={setShowAllinfoExhibition} AllAdminExhibition={AllAdminExhibition}/>
+      </Modal> 
+           <Modal onHide={()=>{setAddExhibition(false)}} size='lg'  show={addExhibition}>
+    <Modal.Header closeButton>
+    <Modal.Title id="example-custom-modal-styling-title">
+    <h2 className="text-3xl text-center font-semibold text-blue-600 mb-6">Create New Exhibition</h2>
+
+          </Modal.Title>
+          </Modal.Header>
+      <Modal.Body>
+      <CreateExhibitionaPage setAddExhibition={setAddExhibition}/>
+      </Modal.Body>
       </Modal> 
     </>
   )

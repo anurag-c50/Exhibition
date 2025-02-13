@@ -4,7 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import { useSelector,useDispatch } from 'react-redux';
 import { IsAuth } from '../redux/features/IsAuthSlice'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { setLogoutStatus, UserLogout } from '../redux/features/LogoutSlice';
+import { UserAllLogout } from '../redux/features/LogoutSlice';
+import { setAlllogoutStatus, setLogoutStatus, UserLogout } from '../redux/features/LogoutSlice';
 import { useNavigate } from 'react-router-dom';
 import { exhibitionCategories } from '../Data/ExhibitionCategories';
 import { createBookTicket, FetchALlTicket } from '../redux/features/AttendeeSlice';
@@ -19,6 +20,8 @@ export default function AttendeDashbord() {
   const [qrCode,setQRCode]=useState()
   const [showQrCodeModel,setShowQrCodeModel]=useState(false)
   const dispatch = useDispatch()
+    const AlllogoutStatus=useSelector((state)=>state?.logoutReducer?.AlllogoutStatus)
+  
   const [userTicekt,setUserTicket]=useState(true)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
@@ -39,7 +42,11 @@ useEffect(() => {
     dispatch(setLogoutStatus(null))
    navigate('/')
  }
-
+ if(AlllogoutStatus?.status){
+  dispatch(setLoginData(null))
+  dispatch(setAlllogoutStatus(null))
+  navigate('/') 
+}
     dispatch(IsAuth())  
     const userData = JSON.parse(localStorage.getItem("UserData"));
     if (userData && userData?.userTicket?.length !== 0) {
@@ -51,7 +58,7 @@ useEffect(() => {
       }else{
         setUserTicket(false)
       }
-  }, [logoutStatus,userBookTicket]);
+  }, [logoutStatus,userBookTicket,AlllogoutStatus]);
   const filteredData = exhibitionCategories.filter((item) =>
     item?.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -92,6 +99,9 @@ useEffect(() => {
   const setCloseQrCodeModel=()=>{
     setShowQrCodeModel(false)
   }
+    const AllLogout=()=>{
+      dispatch(UserAllLogout())
+    }
   return (
     <>
     <div className="min-h-screen bg-gray-100">
@@ -99,12 +109,8 @@ useEffect(() => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl">Attendee Dashboard</h1>
           <div className="space-x-4">
-            <button  className="hover:bg-blue-500 px-4 py-2 rounded">
-              Update Profile
-            </button>
-            <button onClick={()=>{Logout()}} className="hover:bg-red-500 px-4 py-2 rounded">
-              Logout
-            </button>
+          <input  type="button" onClick={()=>{Logout()}} value="Logout " className="hover:bg-red-500 px-4 py-2 rounded"/> 
+            <input  type="button" onClick={()=>{AllLogout()}} value="Logout From All devices" className="hover:bg-red-500 px-4 py-2 rounded"/> 
           </div>
         </div>
       </nav>

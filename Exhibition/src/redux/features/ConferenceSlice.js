@@ -1,5 +1,5 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import { createConference, createStageData, FetchSpeakerData } from "../../apiRouter";
+import { createConference, createStageData, FetchConferenceStaff, FetchSpeakerData, SelectConferenceStaff } from "../../apiRouter";
 import { fetchExhibitionConference } from "../../apiRouter";
 import axios from "axios";
 
@@ -78,6 +78,35 @@ export const AdminCreatedConference=createAsyncThunk("AdminCreatedConference",as
         console.log(err)
     }
 })
+export const selectCOnferenceStaff = createAsyncThunk("selectCOnferenceStaff",async(data1)=>{
+    try{
+        console.log(data1)
+        const data = await axios.post(SelectConferenceStaff,{
+            conferenceId:data1?.conferenceId,
+            staffId:data1?.staffId
+        })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
+        return data.data
+        }catch(err){
+            console.log(err)
+        } 
+})
+export const fetchConferenceStaff = createAsyncThunk("fetchConferenceStaff",async(conferenceId)=>{
+    try{
+        const data = await axios.post(FetchConferenceStaff,{
+            conferenceId:conferenceId,
+            staffRole:"2"
+        })
+        if(data.status !==200){
+            throw new Error("Server Error")
+        }
+        return data.data
+        }catch(err){
+            console.log(err)
+        } 
+})
 export const conferenceInfo=createSlice({
     name:"conferenceInfo",
     initialState:{
@@ -85,7 +114,9 @@ export const conferenceInfo=createSlice({
         exhibitionAllCOnferenceInfo:null,
         conferenceInfoForDate:null,
         fetchSpeakerData:null,
-        stageData:null
+        stageData:null,
+        fetchConferenceStaffData:null,
+        selectConferenceStaffData:null
     },
     extraReducers:(builder)=>{
         builder.addCase(AdminCreatedConference.fulfilled,(state,action)=>{
@@ -103,6 +134,12 @@ export const conferenceInfo=createSlice({
         builder.addCase(CreateStageData.fulfilled,(state,action)=>{
             state.stageData=action.payload
         })
+        builder.addCase(fetchConferenceStaff.fulfilled,(state,action)=>{
+            state.fetchConferenceStaffData=action.payload
+        })
+        builder.addCase(selectCOnferenceStaff.fulfilled,(state,action)=>{
+            state.selectConferenceStaffData=action.payload
+        })
     },
     reducers:{
         setConferenceData:(state,action)=>{
@@ -110,8 +147,11 @@ export const conferenceInfo=createSlice({
         },
         setuserStatgeData:(state,action)=>{
             state.stageData=action.payload
+        },     
+        setSelectConferenceStaffData:(state,action)=>{
+            state.selectConferenceStaffData=action.payload
         }
     }
 })
-export const {setConferenceData,setuserStatgeData}=conferenceInfo.actions
+export const {setConferenceData,setuserStatgeData,setSelectConferenceStaffData}=conferenceInfo.actions
 export default conferenceInfo.reducer

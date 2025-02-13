@@ -14,8 +14,9 @@ export default function CreateStage({ConferenceInfoAtIndex,ExhibitionInfo,setOpe
   })
 const createStatgedata=useSelector((state)=>state?.conferenceReducer?.stageData)
 useEffect(()=>{
+  console.log(createStatgedata?.status)
   if(createStatgedata?.status){
-    setuserStatgeData(null)
+    dispatch(setuserStatgeData(null))
     setOpenConferenceByDate(false)
     setOpenCreateStage(false)
   }

@@ -25,7 +25,44 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
     },
     noOfExhibitionStaffManagementRequire:null
   })
+     const [Error,setError]=useState({
+        Error1:{err:"",check:false},
+      })
+      const exhibitionValidation = () => {
+           if (exhibitionData.exhibitionName==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionAddress.address==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionAddress.city==="") {
+            return true
+          }  
+          if (exhibitionData.exhibitionAddress.state==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionAddress.pincode===null) {
+            return true
+          }       
+          if (exhibitionData.exhibitionBannerImg==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionCategorie==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionDuration.Start==="") {
+            return true
+          } 
+          if (exhibitionData.exhibitionDuration.End==="") {
+            return true
+          } 
+          if (exhibitionData.noOfExhibitionStaffManagementRequire===null) {
+            return true
+          } 
+        return false
+      }
   const handleCreateExhibition=(e)=>{
+    setError({...Error,Error1:{check:false,err:""}})
     if(e.target.name==="exhibitionBannerImg"){
       const file = e.target.files[0]
       const reader = new FileReader()
@@ -44,6 +81,10 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
     }
   }
   const Exhibitioncreate=()=>{
+    if(exhibitionValidation()){
+      setError({...Error,Error1:{check:true,err:"Empty Field"}})
+      return
+    }
     dispatch(CreateExhibition(exhibitionData))
   }
     const filteredData = exhibitionCategories.filter((item) =>
@@ -69,16 +110,15 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
   return (
     <>
    <div className="bg-gray-100 p-6 rounded-lg shadow-lg w-[100vh]  mx-auto">
-      <h2 className="text-3xl text-center font-semibold text-blue-600 mb-6">Create New Exhibition</h2>
       
       <div className="space-y-6">
         <div className="flex justify-center">
-          <input type="text" className="w-[80%] md:w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="exhibitionName" value={exhibitionData.exhibitionName} placeholder="Enter Exhibition Name" />
+          <input type="text" className="w-[80%] md:w-[60%] text-center outline-3 outline-gray-400  focus:outline-blue-500 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="exhibitionName" value={exhibitionData.exhibitionName} placeholder="Enter Exhibition Name" />
         </div>
 
         <div>
           <div className="flex justify-center mb-4">
-            <input type="text" className="w-[80%] md:w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="address" value={exhibitionData.exhibitionAddress.address} placeholder="Enter Address" />
+            <input type="text" className="w-[80%] md:w-[60%] text-center outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="address" value={exhibitionData.exhibitionAddress.address} placeholder="Enter Address" />
           </div>
       <div className="w-full flex flex-col items-center justify-center mb-4">
       <div className="relative w-[60%] bg-white rounded-full border  border-gray-300 shadow-lg" >
@@ -102,30 +142,31 @@ export default function CreateExhibitionaPage({setAddExhibition}) {
         </div>
       )}
     </div>
-          <div className="flex justify-center space-x-4">
-            <input type="text" className="w-[40%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="state" value={exhibitionData.exhibitionAddress.state} placeholder="Enter State"/>
-            <input type="text" className="w-[40%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="city" value={exhibitionData.exhibitionAddress.city} placeholder="Enter City" />
-            <input type="number" className="w-[20%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="pincode" value={exhibitionData.exhibitionAddress.pincode} placeholder="Enter Pincode"/>
+          <div className="flex w-[100%] justify-around space-x-4">
+            <input type="text" className="w-[35%] text-center outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="state" value={exhibitionData.exhibitionAddress.state} placeholder="Enter State"/>
+            <input type="text" className="w-[35%] text-center outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="city" value={exhibitionData.exhibitionAddress.city} placeholder="Enter City" />
+            <input type="number" className="w-[20%] text-center outline-3 outline-gray-400  focus:outline-blue-500 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="pincode" value={exhibitionData.exhibitionAddress.pincode} placeholder="Enter Pincode"/>
           </div>
         </div>
         <div className="flex justify-center gap-8">
           <div>
             <label htmlFor="StartDate" className="block text-center">Start Date:</label>
-            <input type="date"name="Start" className="border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} id="StartDate"/>
+            <input type="date"name="Start" className="outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} id="StartDate"/>
           </div>
 
           <div>
             <label htmlFor="EndDate" className="block text-center">End Date:</label>
-            <input type="date" name="End" className="border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} id="EndDate"/>
+            <input type="date" name="End" className="outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} id="EndDate"/>
           </div>
         </div>
         <div className="flex justify-center">
-          <input type="number" className="w-[60%] text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="noOfExhibitionStaffManagementRequire" value={exhibitionData.noOfExhibitionStaffManagementRequire} placeholder="Enter number of staff required" />
+          <input type="number" className="w-[60%] text-center  outline-3 outline-gray-400  focus:outline-blue-500  rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)} name="noOfExhibitionStaffManagementRequire" value={exhibitionData.noOfExhibitionStaffManagementRequire} placeholder="Enter number of staff required" />
         </div>
 
         <div className="flex justify-center">
-          <input type="file" name="exhibitionBannerImg" className="text-center border-[2px] border-gray-300 rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)}placeholder="Upload Banner Image"/>
+          <input type="file" name="exhibitionBannerImg" className="text-center outline-3 outline-gray-400  focus:outline-blue-500   rounded-lg p-2" onChange={(e) => handleCreateExhibition(e)}placeholder="Upload Banner Image"/>
         </div>
+        {Error.Error1.check&&<p className='w-[100%] text-center text-red-400'>{Error.Error1.err}</p>}
 
         <div className="flex justify-center">
           <input type="button" onClick={()=>Exhibitioncreate()} className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition" value="Create Exhibition"/> 

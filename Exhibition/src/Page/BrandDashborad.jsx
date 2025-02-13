@@ -1,22 +1,33 @@
 
 import React, { useEffect, useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSelector,useDispatch } from 'react-redux';
 import { IsAuth } from '../redux/features/IsAuthSlice'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { setLogoutStatus, UserLogout } from '../redux/features/LogoutSlice';
+import { setAlllogoutStatus, setLogoutStatus, UserLogout } from '../redux/features/LogoutSlice';
 import { useNavigate } from 'react-router-dom';
 import { exhibitionCategories } from '../Data/ExhibitionCategories';
 import { setLoginData } from '../redux/features/AdminSignupAndLoginSlice';
-import { AddProductInBrand, brandRegisterInExhibition, fetchAllBrandExhibitionInfo, FetchExhibitionForBrand,setBrandRegister, setbrandAddDataProduct } from '../redux/features/BrandSlice';
+import { AddProductInBrand, brandRegisterInExhibition, fetchAllBrandExhibitionInfo, FetchExhibitionForBrand,setBrandRegister, setbrandAddDataProduct, fetchproductstaffmanegement, fetchproductstaffshell, FetchStaffManagementData, FetchStaffShellData } from '../redux/features/BrandSlice';
 import { setfetchExhibitionForBrand } from '../redux/features/BrandSlice';
 import ProductInfo from '../BrandDashboard/ProductInfo';
+import { setselectStaffProductManagementdata,setselectStaffProductShelldata } from '../redux/features/BrandSlice';
+import BrandStaff from '../BrandDashboard/BrandStaff'
+import BrandAddStaffNo from '../BrandDashboard/BrandAddStaffNo';
+import BrandStaffInfo from '../BrandDashboard/BrandStaffInfo';
+import { UserAllLogout } from '../redux/features/LogoutSlice';
 export default function BrandDashborad() {
   const navigate = useNavigate()
+    const staffManegementData = useSelector((state) => state?.BrandReducer?.selectStaffProductManagementdata);
+    const AlllogoutStatus=useSelector((state)=>state?.logoutReducer?.AlllogoutStatus)
+
+    const staffShellData = useSelector((state) => state?.BrandReducer?.selectStaffProductShelldata);  
   const UserData = JSON.parse(localStorage.getItem("UserData"))
   const logoutStatus = useSelector((state) => state?.logoutReducer?.logoutStatus)
   const dispatch = useDispatch()
   const [productData,setProductData]=useState()
+  const [showStaffNOtModal,setShowStaffNOtModal]=useState(false)
+  const [showProductModal,setShowProductModal]=useState(false)
   const [searchQuery, setSearchQuery] = useState('');
   const [brandData,setBradnData]=useState({
     productName:"",
@@ -33,15 +44,48 @@ export default function BrandDashborad() {
   const [openAddProductModal,setOpenAddProductModal]=useState(false)
   const [openProductInfoModal,setOpenProductInfoModal]=useState(false)
   const [showParticularExhibition,setShowParticularExhibition]=useState(true)
+  const [exhibitionDataForCategorieSecond,setExhibitionDataForCategorieSecond]=useState()
   const exhibitionDataForCategorie=useSelector((state)=>state?.BrandReducer?.fetchExhibitionForBrand)
   const brandExhibitionData=useSelector((state)=>state?.BrandReducer?.allBrandExhibition)
   const BrandRegisterInExhibition=useSelector((state)=>state?.BrandReducer?.brandRegisterInExhibition)
   const addProductData=useSelector((state)=>state?.BrandReducer?.brandAddDataProduct)
   const currentDate=new Date()
   const [selectExhibitionConferenceData,setSelectExhibitionConferenceData]=useState()
+  const [selectConferenceId,setSelectConferenceId]=useState()
+  const [openStaffInfoModal,setOpenStaffInfoModal]=useState(false)
   const [openBrandRegisterInExhibition,setOpenBrandRegisterInExhibition]=useState(false)
   const handleOpenModalbrandRegister=()=>{
     setOpenBrandRegisterInExhibition(true)
+  }
+  const isOpenStaffInfoModal=(StaffId)=>{
+    const staffId=StaffId.filter((item)=>item?.BrandId===(JSON.parse(localStorage.getItem("UserData")))._id)
+    console.log(staffId)
+    dispatch(FetchStaffManagementData(staffId[0]?.productSatffManegmentStaffId))
+    dispatch(FetchStaffShellData(staffId[0]?.productSatffShellStaffId))
+    setOpenStaffInfoModal(true)
+        }
+        const isCloseStaffInfoModal=()=>{
+          setOpenStaffInfoModal(false)
+        }
+  const isOpenProductModal=(id)=>{
+    dispatch(fetchproductstaffmanegement(id))
+    dispatch(fetchproductstaffshell(id))
+    setShowProductModal(true)
+  }
+  // useEffect(()=>{
+  //   if(exhibitionDataForCategorie?.data){
+  //     removeSameCOnference()
+  //   }
+  // },[exhibitionDataForCategorie])
+  const isCloseProductModal=()=>{
+    setShowProductModal(false)
+  }
+  const isOpenStaffNoModal=(id)=>{
+    setSelectConferenceId(id)
+    setShowStaffNOtModal(true)
+  }
+  const isCloseStaffNoModal=()=>{
+    setShowStaffNOtModal(false)
   }
   const setOffer=()=>{
     setBradnData({...brandData,offerInfo:{ ...brandData.offerInfo,isOffer: !(brandData?.offerInfo?.isOffer)}});
@@ -54,6 +98,21 @@ export default function BrandDashborad() {
     setBradnData({...brandData,[e.target.name]:e.target.value})
     }
   }
+  useEffect(() => {
+    if (logoutStatus?.status) {
+      dispatch(setLoginData(null))
+      dispatch(setLogoutStatus(null))
+      navigate('/')
+    }
+     if(AlllogoutStatus?.status){
+      dispatch(setLoginData(null))
+      dispatch(setAlllogoutStatus(null))
+      navigate('/') 
+    }
+  }, [logoutStatus,AlllogoutStatus])
+  // const result=reduce((acc, exhibition)=>{
+    
+  // }, [])
   const addProduct=()=>{
     dispatch(AddProductInBrand(brandData))
   }
@@ -82,23 +141,21 @@ export default function BrandDashborad() {
     if(BrandRegisterInExhibition?.status){
       setOpenBrandRegisterInExhibition(false)
       setBrandRegister(null)
+      setShowStaffNOtModal(false)
       setSelectedItem("")
       dispatch(setfetchExhibitionForBrand(null))
       setShowParticularExhibition(true)
       setSelectExhibitionConferenceData()
     }
-  }, [logoutStatus,addProductData,BrandRegisterInExhibition]);
+    if(staffManegementData?.status){
+      dispatch(setselectStaffProductManagementdata(null))
+    }  if(staffShellData?.status){
+      dispatch(setselectStaffProductShelldata(null))
+    }
+  }, [addProductData,BrandRegisterInExhibition,staffManegementData,staffShellData]);
   const filteredData = exhibitionCategories.filter((item) =>
     item?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  useEffect(() => {
-    if (logoutStatus?.status) {
-      dispatch(setLoginData(null))
-      dispatch(setLogoutStatus(null))
-      navigate('/')
-    }
-  }, [logoutStatus])
-
   const Logout = () => {
     dispatch(UserLogout(UserData?.userEmail))
   }
@@ -119,14 +176,35 @@ export default function BrandDashborad() {
     setSelectedItem(item);
     setSearchQuery("");
   }
-  const registerInConference=(data)=>{
-    // console.log(data)
-    dispatch(brandRegisterInExhibition(data._id))
-  }
+  console.log(brandExhibitionData,exhibitionDataForCategorie)
+
+  
+  // const removeSameCOnference=()=>{
+  //   exhibitionDataForCategorie?.data.forEach(item1 => {
+  //     brandExhibitionData?.groupedExhibitions.forEach(item2 => {
+  //       if (item1.exhibition._id === item2.exhibition._id) {
+  //         item1.conferences = item1.conferences.filter(conference1 => 
+            
+  //           !item2?.conferencesWithProducts.some(conference2 => conference2?.conference._id === conference1._id)
+  //         );
+  //       }
+  //     });
+  //       // if (item1.conferences.length === 0) {
+  //       // const index = exhibitionDataForCategorie?.data.indexOf(item1);
+  //       // if (index > -1) exhibitionDataForCategorie?.data.splice(index, 1);
+  //     // }
+  //   });
+  //   setExhibitionDataForCategorieSecond(exhibitionDataForCategorie?.data.filter(item => item.conferences.length > 0))
+  // }
+  // console.log(removeSameCOnference(),setExhibitionDataForCategorieSecond)
+
   const handleChangeParticularExhibition=(index)=>{
     setSelectExhibitionConferenceData(exhibitionDataForCategorie?.data[index])
     setShowParticularExhibition(false)
   }
+    const AllLogout=()=>{
+      dispatch(UserAllLogout())
+    }
   return (
     <>
     <div className="min-h-screen bg-gray-100">
@@ -134,12 +212,9 @@ export default function BrandDashborad() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl">{UserData?.brandName} Dashboard</h1>
           <div className="space-x-4">
-            <button  className="hover:bg-blue-500 px-4 py-2 rounded">
-              Update Profile
-            </button>
-            <button onClick={()=>{Logout()}} className="hover:bg-red-500 px-4 py-2 rounded">
-              Logout
-            </button>
+          <input  type="button" onClick={()=>{Logout()}} value="Logout " className="hover:bg-red-500 px-4 py-2 rounded"/> 
+            <input  type="button" onClick={()=>{AllLogout()}} value="Logout From All devices" className="hover:bg-red-500 px-4 py-2 rounded"/> 
+
           </div>
         </div>
       </nav>
@@ -150,7 +225,6 @@ export default function BrandDashborad() {
            Register Your Brand
           </button>
   </div> 
-{console.log()}
   <div className="border-[5px] border-blue-600 rounded-lg overflow-hidden shadow-lg ">
     { brandExhibitionData?.groupedExhibitions.length!==0?
     brandExhibitionData && brandExhibitionData?.groupedExhibitions.map((item, index1) => {
@@ -199,14 +273,40 @@ export default function BrandDashborad() {
                       <p  className="m-0">{new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming).toLocaleTimeString()}</p>
                     </div>
                   </div>
+                  <div className='flex justify-around'>
+                  {conference?.conference?.brandStallInfo.map((item,index)=>{
+                    if(item?.BrandId===(JSON.parse(localStorage.getItem("UserData"))?._id)){
+                    return(<><div className="flex">
+                    
+                      <p className="m-0 font-semibold">Product Staff Management Positions:</p>
+                      <p  className="m-0">{item?.productSatffManegmentStaff}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Available Staff Management Positions:</p>
+                      <p  className="m-0">{item?.productSatffManegmentStaff-item?.productSatffManegmentStaffId.length}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Staff Shell Positions:</p>
+                      <p  className="m-0">{item?.productSatffShellStaff}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Available Staff Shell Positions:</p>
+                      <p  className="m-0">{item?.productSatffShellStaff-item?.productSatffShellStaffId.length}</p>
+                    </div></>)}})}
+                    </div>
                   <div className="flex gap-[10px] justify-center">
                   {currentDate < new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming) ? (<>
                   <input type="button" onClick={() => handleOpenModalAddProduct(conference?.conference?._id)} 
                   className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Product"/>
                   {conference?.products?.length > 0 && (
                     <input type="button" onClick={() => handleOpenModalProductInfo(conference?.products)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Product Info"/>)}</>):(
-                      <div className='w-[100%] text-center text-gray-400 text-[20px]'>Ticket Expired</div>
+                      <div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>
                     )}
+                  {currentDate < new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming) ?
+              <input type='button' onClick={()=>isOpenProductModal(conference?.conference?._id)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Staff"/>
+                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>
+                    }
+                {<input type='button' onClick={()=>{isOpenStaffInfoModal(conference?.conference?.brandStallInfo)}} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Staff Info"/>}            
 
               </div>
                 </div>
@@ -232,13 +332,35 @@ export default function BrandDashborad() {
                       <p  className="m-0">{new Date(conference?.conferenceDuration?.conferenceEndTiming).toLocaleTimeString()}</p>
                     </div>
                   </div>
+                  <div className='flex justify-around'>
+                  {conference?.brandStallInfo.map((item,index)=>{
+                    if(item?.BrandId===(JSON.parse(localStorage.getItem("UserData"))?._id)){
+                    return(<><div className="flex">
+                    
+                      <p className="m-0 font-semibold">Product Staff Management Positions:</p>
+                      <p  className="m-0">{item?.productSatffManegmentStaff}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Available Staff Management Positions:</p>
+                      <p  className="m-0">{item?.productSatffManegmentStaff-item?.productSatffManegmentStaffId.length}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Staff Shell Positions:</p>
+                      <p  className="m-0">{item?.productSatffShellStaff}</p>
+                    </div>
+                    <div className="flex">
+                      <p className="m-0 font-semibold">Product Available Staff Shell Positions:</p>
+                      <p  className="m-0">{item?.productSatffShellStaff-item?.productSatffShellStaffId.length}</p>
+                    </div></>)}})}
+                    </div>
                   <div className="flex gap-[10px] justify-center">
                   {currentDate < new Date(conference?.conferenceDuration?.conferenceEndTiming) ?
               <input type='button' onClick={()=>handleOpenModalAddProduct(conference?._id)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Product"/>
-                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Ticket Expired</div>
+                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>
                     }
-
-            </div>
+              <input type='button' onClick={()=>isOpenProductModal(conference?._id)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Staff"/>
+             {/* {(item?.productSatffShellStaffId.length!==0||item?.productSatffManegmentStaffId.length!==0)&&<input type='button' onClick={()=>{}} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Staff Info"/>}             */}
+             </div>
             </div>)})}
             
         </div>
@@ -257,12 +379,12 @@ export default function BrandDashborad() {
       <Modal.Body>
       {exhibitionDataForCategorie?
       showParticularExhibition?
-      (exhibitionDataForCategorie?.msg
+      (exhibitionCategories?.msg
         ?<div className="w-full max-w-md mx-auto mt-2">
         <p className='text-[17px] text-gray-500'>{exhibitionDataForCategorie?.msg}</p>
         </div>:
       <div className=' p-[1`%] overflow-y-auto rounded-lg overflow-hidden bg-white shadow-lg'>
-        {exhibitionDataForCategorie?.data.map((item, index)=>{return(
+        {exhibitionDataForCategorie&&exhibitionDataForCategorie?.data.map((item, index)=>{return(
           <div className='flex border-[2px] m-[5px] border-gray-400 rounded-lg justify-center items-center flex-col'>
             <h3 className='m-0'>{item?.exhibition?.exhibitionName}</h3>
             <div className="flex w-[100%] justify-around text-sm text-gray-700">
@@ -334,7 +456,7 @@ export default function BrandDashborad() {
                   </div>
                   <div className='w-[100%] flex justify-center h-[6vh] items-center'>
                     {currentDate<new Date(conference?.conferenceDuration?.conferenceStartTiming)?
-                    <input type='button' onClick={()=>{registerInConference(conference)}} className=' w-[20%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] ' value="Register In Exhibition"/> 
+                    <input type='button' onClick={()=>{isOpenStaffNoModal(conference?._id)}} className=' w-[10%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] ' value="Add"/> 
                     :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Registration Time Expired</div>}
                     </div>
                   </div>
@@ -421,6 +543,36 @@ export default function BrandDashborad() {
           </Modal.Header>
       <Modal.Body>
         <ProductInfo ProductData={productData}/>
+      </Modal.Body>
+      </Modal> 
+      <Modal onHide={()=>{isCloseStaffNoModal()}} size='lg'  show={showStaffNOtModal}>
+    <Modal.Header closeButton>
+          <Modal.Title id="example-custom-modal-styling-title">
+            Enter Requirement Staff
+          </Modal.Title>
+          </Modal.Header>
+      <Modal.Body>
+        <BrandAddStaffNo selectConferenceId={selectConferenceId}/>
+      </Modal.Body>
+      </Modal> 
+      <Modal onHide={()=>{isCloseProductModal()}} size='lg'  show={showProductModal}>
+    <Modal.Header closeButton>
+          <Modal.Title id="example-custom-modal-styling-title">
+            Staff Selection
+          </Modal.Title>
+          </Modal.Header>
+      <Modal.Body>
+        <BrandStaff setShowProductModal={setShowProductModal}/>
+      </Modal.Body>
+      </Modal> 
+      <Modal onHide={()=>{isCloseStaffInfoModal()}} size='lg'  show={openStaffInfoModal}>
+    <Modal.Header closeButton>
+          <Modal.Title id="example-custom-modal-styling-title">
+            Staff Info
+          </Modal.Title>
+          </Modal.Header>
+      <Modal.Body>
+        <BrandStaffInfo/>
       </Modal.Body>
       </Modal> 
     </>

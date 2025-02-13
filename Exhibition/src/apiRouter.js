@@ -1,7 +1,6 @@
 const host = 'http://localhost:80';
 export const signupRoute = `${host}/api/sign`
 export const loginRoute =`${host}/api/login`
-export const createExhibition =`${host}/api/createexhibition`
 export const Auth =`${host}/api/Auth`
 export const FetchAllAdminExhibition =`${host}/api/fetchadminExhibition`
 export const createConference = `${host}/api/createconference`
@@ -14,6 +13,17 @@ export const FetchSpeakerData=`${host}/api/fetchspeakerdata`
 export const createStageData=`${host}/api/createstagedata`
 export const bookTicket=`${host}/api/bookticket`
 export const fetchAllUserTicket=`${host}/api/fetchalluserticket`
-
-
+export const FetchExhibitionStaff=`${host}/api/fetchexhibitionstaff`
+export const SelectConferenceStaff=`${host}/api/selectconferencestaff`
+export const FetchConferenceStaff=`${host}/api/fetchconferencestaff`
+export const SelectExhibitionStaff=`${host}/api/selectexhibitionstaff`
+export const Fetchproductstaffmanegement=`${host}/api/fetchproductstaffmanegement`
+export const Fetchproductstaffshell=`${host}/api/fetchproductstaffshell`
+export const Selectproductstaffmanegement=`${host}/api/selectproductstaffmanegement`
+export const Selectproductstaffshell=`${host}/api/selectproductstaffshell`
+export const fetchStaffInfo=`${host}/api/fetchstaffinfo`
+export const fetchStaffShellInfo=`${host}/api/fetchstaffshellinfo`
+export const fetchStaffManagementInfo=`${host}/api/fetchstaffManagementinfo`
 export const logOut=`${host}/api/logout`
+export const AlllogOut=`${host}/api/logoutalldevice`
+

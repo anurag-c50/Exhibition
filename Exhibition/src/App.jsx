@@ -5,7 +5,6 @@ import PrivateRoute from './middleware/PrivateRoute'
 import LoginAndRegister from './Page/LoginAndRegister';
 import AdminDashbord from "./Page/AdminDashbord";
 import BrandDashborad from "./Page/BrandDashborad";
-import StaffDashborad from "./Page/StaffDashborad";
 import AttendeDashbord from "./Page/AttendeDashbord";
 function App() {
 
@@ -16,7 +15,6 @@ function App() {
     <Route path='/' element={<PublicRoute element={<LoginAndRegister />} redirectTo="/" />} />
     <Route path="/admindashbord" element={<PrivateRoute element={<AdminDashbord />} redirectTo="/" requiredRole="1" />} />
     <Route path="/branddashbord"  element={<PrivateRoute element={<BrandDashborad />} redirectTo="/" requiredRole="3" />} />
-    <Route path="/staffdashbord"  element={<PrivateRoute element={<StaffDashborad />} redirectTo="/" requiredRole="4" />} />
     <Route path="/attendedashbord"  element={<PrivateRoute element={<AttendeDashbord />} redirectTo="/" requiredRole="5" />} />
     </Routes>
     </BrowserRouter>
