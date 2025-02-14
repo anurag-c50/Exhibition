@@ -180,6 +180,10 @@ export default function BrandDashborad() {
 
   
  const removeSameCOnference = () => {
+  if(exhibitionDataForCategorie?.msg){
+    setExhibitionDataForCategorieSecond(exhibitionDataForCategorie)
+    return
+  }
   const updatedExhibitionData = exhibitionDataForCategorie?.data.map(item1 => {
     const filteredConferences = item1.conferences.filter(conference1 =>
       !brandExhibitionData?.groupedExhibitions.some(item2 =>
@@ -191,7 +195,6 @@ export default function BrandDashborad() {
 
     return { ...item1, conferences: filteredConferences };
   }).filter(item => item.conferences.length > 0);
-
   setExhibitionDataForCategorieSecond(updatedExhibitionData);
 };
 useEffect(()=>{
@@ -379,12 +382,13 @@ useEffect(()=>{
       <Modal.Body>
       {exhibitionDataForCategorie?
       showParticularExhibition?
-      (exhibitionCategories?.msg
+      (exhibitionDataForCategorie?.msg
         ?<div className="w-full max-w-md mx-auto mt-2">
         <p className='text-[17px] text-gray-500'>{exhibitionDataForCategorie?.msg}</p>
         </div>:
       <div className=' p-[1`%] overflow-y-auto rounded-lg overflow-hidden bg-white shadow-lg'>
-        {exhibitionDataForCategorieSecond&&exhibitionDataForCategorieSecond.map((item, index)=>{return(
+        {exhibitionDataForCategorieSecond&&(exhibitionDataForCategorieSecond.length===0?<><p className='text-[17px] text-center m-[0px] p-[6px] text-gray-500'>{"No active or upcoming exhibitions found."}</p>
+        </>:exhibitionDataForCategorieSecond.map((item, index)=>{return(
           <div className='flex border-[2px] m-[5px] border-gray-400 rounded-lg justify-center items-center flex-col'>
             <h3 className='m-0'>{item?.exhibition?.exhibitionName}</h3>
             <div className="flex w-[100%] justify-around text-sm text-gray-700">
@@ -405,7 +409,7 @@ useEffect(()=>{
               <button onClick={()=>handleChangeParticularExhibition(index)} className=' w-[40%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] '>All Exhibition Info</button>
             </div> 
           </div>
-        )})} 
+        )}))} 
       </div>):
     
       <div className="space-y-6">
