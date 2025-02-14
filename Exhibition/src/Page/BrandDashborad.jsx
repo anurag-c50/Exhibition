@@ -179,23 +179,23 @@ export default function BrandDashborad() {
   console.log(brandExhibitionData,exhibitionDataForCategorie)
 
   
-  // const removeSameCOnference=()=>{
-  //   exhibitionDataForCategorie?.data.forEach(item1 => {
-  //     brandExhibitionData?.groupedExhibitions.forEach(item2 => {
-  //       if (item1.exhibition._id === item2.exhibition._id) {
-  //         item1.conferences = item1.conferences.filter(conference1 => 
+  const removeSameCOnference=()=>{
+    exhibitionDataForCategorie?.data.forEach(item1 => {
+      brandExhibitionData?.groupedExhibitions.forEach(item2 => {
+        if (item1.exhibition._id === item2.exhibition._id) {
+          item1.conferences = item1.conferences.filter(conference1 => 
             
-  //           !item2?.conferencesWithProducts.some(conference2 => conference2?.conference._id === conference1._id)
-  //         );
-  //       }
-  //     });
-  //       // if (item1.conferences.length === 0) {
-  //       // const index = exhibitionDataForCategorie?.data.indexOf(item1);
-  //       // if (index > -1) exhibitionDataForCategorie?.data.splice(index, 1);
-  //     // }
-  //   });
-  //   setExhibitionDataForCategorieSecond(exhibitionDataForCategorie?.data.filter(item => item.conferences.length > 0))
-  // }
+            !item2?.conferencesWithProducts.some(conference2 => conference2?.conference._id === conference1._id)
+          );
+        }
+      });
+        // if (item1.conferences.length === 0) {
+        // const index = exhibitionDataForCategorie?.data.indexOf(item1);
+        // if (index > -1) exhibitionDataForCategorie?.data.splice(index, 1);
+      // }
+    });
+    setExhibitionDataForCategorieSecond(exhibitionDataForCategorie?.data.filter(item => item.conferences.length > 0))
+  }
   // console.log(removeSameCOnference(),setExhibitionDataForCategorieSecond)
 
   const handleChangeParticularExhibition=(index)=>{
