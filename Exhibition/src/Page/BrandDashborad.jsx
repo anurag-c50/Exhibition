@@ -176,30 +176,33 @@ export default function BrandDashborad() {
     setSelectedItem(item);
     setSearchQuery("");
   }
-  console.log(brandExhibitionData,exhibitionDataForCategorie)
+ console.log(brandExhibitionData,exhibitionDataForCategorie)
 
   
-  const removeSameCOnference=()=>{
-    exhibitionDataForCategorie?.data.forEach(item1 => {
-      brandExhibitionData?.groupedExhibitions.forEach(item2 => {
-        if (item1.exhibition._id === item2.exhibition._id) {
-          item1.conferences = item1.conferences.filter(conference1 => 
-            
-            !item2?.conferencesWithProducts.some(conference2 => conference2?.conference._id === conference1._id)
-          );
-        }
-      });
-        // if (item1.conferences.length === 0) {
-        // const index = exhibitionDataForCategorie?.data.indexOf(item1);
-        // if (index > -1) exhibitionDataForCategorie?.data.splice(index, 1);
-      // }
-    });
-    setExhibitionDataForCategorieSecond(exhibitionDataForCategorie?.data.filter(item => item.conferences.length > 0))
-  }
-  // console.log(removeSameCOnference(),setExhibitionDataForCategorieSecond)
+ const removeSameCOnference = () => {
+  const updatedExhibitionData = exhibitionDataForCategorie?.data.map(item1 => {
+    const filteredConferences = item1.conferences.filter(conference1 =>
+      !brandExhibitionData?.groupedExhibitions.some(item2 =>
+        item2?.conferencesWithProducts.some(conference2 =>
+          conference2?.conference._id === conference1._id
+        )
+      )
+    );
+
+    return { ...item1, conferences: filteredConferences };
+  }).filter(item => item.conferences.length > 0);
+
+  setExhibitionDataForCategorieSecond(updatedExhibitionData);
+};
+useEffect(()=>{
+ if(exhibitionDataForCategorie){
+  removeSameCOnference()
+ }
+},[exhibitionDataForCategorie])
+  console.log(exhibitionDataForCategorieSecond)
 
   const handleChangeParticularExhibition=(index)=>{
-    setSelectExhibitionConferenceData(exhibitionDataForCategorie?.data[index])
+    setSelectExhibitionConferenceData(exhibitionDataForCategorieSecond[index])
     setShowParticularExhibition(false)
   }
     const AllLogout=()=>{
@@ -299,14 +302,10 @@ export default function BrandDashborad() {
                   <input type="button" onClick={() => handleOpenModalAddProduct(conference?.conference?._id)} 
                   className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Product"/>
                   {conference?.products?.length > 0 && (
-                    <input type="button" onClick={() => handleOpenModalProductInfo(conference?.products)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Product Info"/>)}</>):(
-                      <div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>
-                    )}
-                  {currentDate < new Date(conference?.conference?.conferenceDuration?.conferenceEndTiming) ?
+                    <input type="button" onClick={() => handleOpenModalProductInfo(conference?.products)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Product Info"/>)}
               <input type='button' onClick={()=>isOpenProductModal(conference?.conference?._id)} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Add Staff"/>
-                    :<div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>
-                    }
-                {<input type='button' onClick={()=>{isOpenStaffInfoModal(conference?.conference?.brandStallInfo)}} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Staff Info"/>}            
+                <input type='button' onClick={()=>{isOpenStaffInfoModal(conference?.conference?.brandStallInfo)}} className="w-[11%] bg-blue-600 text-white rounded-[7px] hover:bg-blue-700 hover:cursor-pointer text-center" value="Staff Info"/>        
+                    </>):<div className='w-[100%] text-center text-gray-400 text-[20px]'>Conference Expired</div>}
 
               </div>
                 </div>
@@ -365,7 +364,8 @@ export default function BrandDashborad() {
             
         </div>
       )
-    }):<div className='w-[100%]'><h1 className='text-center text-gray-400 text-[20px]'>You have not registered for any exhibitions yet.</h1></div>}
+    }):<div className='w-[100%]'><h1 className='text-center text-gray-400 text-[20px]'>You have not registered for any exhibitions yet.</h1></div>
+    }
   </div>
 </div>
 
@@ -384,7 +384,7 @@ export default function BrandDashborad() {
         <p className='text-[17px] text-gray-500'>{exhibitionDataForCategorie?.msg}</p>
         </div>:
       <div className=' p-[1`%] overflow-y-auto rounded-lg overflow-hidden bg-white shadow-lg'>
-        {exhibitionDataForCategorie&&exhibitionDataForCategorie?.data.map((item, index)=>{return(
+        {exhibitionDataForCategorieSecond&&exhibitionDataForCategorieSecond.map((item, index)=>{return(
           <div className='flex border-[2px] m-[5px] border-gray-400 rounded-lg justify-center items-center flex-col'>
             <h3 className='m-0'>{item?.exhibition?.exhibitionName}</h3>
             <div className="flex w-[100%] justify-around text-sm text-gray-700">
@@ -403,7 +403,7 @@ export default function BrandDashborad() {
             </div>
             <div className=' w-[100%] flex justify-center h-[6vh] items-center'>
               <button onClick={()=>handleChangeParticularExhibition(index)} className=' w-[40%] h-[78%] rounded hover:bg-blue-500  bg-blue-600 text-[13px] text-[antiquewhite] '>All Exhibition Info</button>
-            </div>
+            </div> 
           </div>
         )})} 
       </div>):
